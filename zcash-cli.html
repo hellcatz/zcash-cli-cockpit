@@ -112,7 +112,7 @@
 
         <div id="zcashTabTransactions" class="tabcontent">
 <p>
-                       <label>Transactions</label><br />
+                       <label>Recent Transactions</label><br />
                         <span id="zcash-transaction-info">...</span>
 </p>
         </div>
@@ -145,22 +145,6 @@
             <table class="cockpit-form-table" style="width: 100%;">
                 <tr>
                     <td style="padding-right: 6px; width: 100%;">
-					<!--
-                        <label class="control-label">Select Command: </label>
-                        <select id="zcash-cli-run-cmd">
-<option value="help">help</option>
-<option value="getinfo" selected=selected>getinfo</option>
-<option value="getbalance">getbalance</option>
-<option value="getwalletinfo">getwalletinfo</option>
-<option value="getmininginfo">getmininginfo</option>
-<option value="listunspent">listunspent</option>
-<option value="listtransactions">listtransactions</option>
-<option value="z_getoperationstatus">z_getoperationstatus</option>
-<option value="z_listaddresses">z_listaddresses</option>
-</select>
-                        <button class="btn btn-default btn-primary" id="zcash-cli-run">Run</button>
-						<br />
-					-->
 						<label class="control-label">Command: </label>
 					    <input type="text" id="zcash-cli-input-cmd" style="width: calc(100% - 134px);" value="getinfo" />
 						<button class="btn btn-default btn-primary" id="zcash-cli-input-run">Run</button>
@@ -300,6 +284,8 @@
         var zbalance_output = $("#zcash-balance");
         var zerrors_output = $("#zcash-errors");
 
+		var zcash_transaction_info = $("#zcash-transaction-info");
+		
         // mining tab
         var zcash_mine_generate = $("#zcash-mine-generate");
         var zcash_mine_nproc = $("#zcash-mine-nproc");
@@ -329,7 +315,6 @@
         $("#zcash-send").on("click", zcash_onClickSend);
         $("#zcash-protect").on("click", zcash_onClickProtect);
         $("#zcash-mine-start").on("click", zcash_mine_start);
-        $("#zcash-cli-run").on("click", zcash_cli_run);
 		$("#zcash-cli-input-run").on("click", zcash_cli_input_run);
 		
         // use "ready" event to begin_application()
@@ -438,6 +423,7 @@
             zcash_cli_getmininginfo();
             zcash_cli_list_zaddr();
             zcash_cli_listunspent();
+			zcash_cli_listtransactions();
         }
 
         //
@@ -578,8 +564,7 @@
             var extrafee = round(parseFloat(zcash_protect_extra_fee.val()));
             var maxamount = round(unspent_balances[zcash_protect_taddresses.val()] - extrafee);
 
-			zcash_op_status = $("#zcash-protect-status");			
-			$("#zcash-protect-cmd").empty();
+			zcash_op_status = $("#zcash-protect-status");
 			zcash_op_status.empty();
 			
             zcash_cli_send(zcash_protect_taddresses.val(), zcash_protect_zaddresses.val(), maxamount, "", $("#zcash-protect-cmd"));
@@ -679,6 +664,7 @@
                 alert("Invalid from address.");
                 return;
             }
+			
             var extrafee = round(parseFloat(zcash_send_extra_fee.val()));
             var maxamount = round(protected_balances[zcash_send_from.val()] - extrafee);
             if (maxamount <= 0)
@@ -703,7 +689,7 @@
 			$("#zcash-send-cmd").empty();
 			zcash_op_status.empty();
             
-            zcash_cli_send(zcash_send_from.val(), zcash_send_to.val(), amount, "", $("#zcash-send-cmd"));
+            zcash_cli_send(zcash_send_from.val().trim(), zcash_send_to.val().trim(), amount, "", $("#zcash-send-cmd"));
         }
 
         function zcash_cli_send(taddr, zaddr, amount, memo, cmd_display) {
@@ -815,17 +801,50 @@
             proc.fail(proc_zcash_cli_fail);
         }
 
+		/*
+		{
+        "account" : "",
+        "address" : "mqhZ392jcsBqa3ZTuDmkG71BeX47oNareX",
+        "category" : "receive",
+        "amount" : 0.10000000,
+        "vout" : 0,
+        "confirmations" : 1504,
+        "blockhash" : "001f1cbb7abe653aa5accf00ac07fd0a9ae6e847f3bcc1f0ec46fd508921699b",
+        "blockindex" : 1,
+        "blocktime" : 1474941795,
+        "txid" : "033afda5c9773d1574d402e3849bda0fe9c10e88086b7a9658f6e7cec715b378",
+        "walletconflicts" : [
+        ],
+        "time" : 1474941589,
+        "timereceived" : 1474941589
+        }
+		*/
+		
         function proc_zcash_cli_listtransactions(data) {
             var jobj = JSON.parse(data);
+			
+			zcash_transaction_info.empty();
+			
             // gather up spendable balances
-            $.each(jobj, function(i) {
+            $.each(jobj.reverse(), function(i) {
+			  /*
 			  jobj[i]["address"];
 			  jobj[i]["category"];
 			  jobj[i]["amount"];
 			  jobj[i]["confirmations"];
-			  if (jobj[i]["generated"] == "true")
-			  {
+			  
+			  jobj[i]["time"];
+			  jobj[i]["blocktime"];
+			  jobj[i]["timereceived"];
+			  */
+			  var date = new Date(parseInt(jobj[i]["time"]) * 1000);
+			  var html = " <span id=\""+jobj[i]["txid"]+"\"> "+ date +" <i>" + jobj[i]["category"] + " amount:</small></i> <b>" + jobj[i]["amount"] + "</b> <small>TAZ</small> <i><small>txid:</small> " + jobj[i]["txid"] + "</i></span><br />";		  
+			  if (jobj[i]["category"] == "generate") {
 			     // this coin was mined
+				 zcash_transaction_info.append(html);
+				 $("#"+jobj[i]["txid"]).css("color", "green");
+			  } else {
+			     zcash_transaction_info.append(html);
 			  }
             });
         }
@@ -838,20 +857,6 @@
         //
         // 	zcash-cli console function
         //
-        function zcash_cli_run() {
-            if (zcash_cli_op_running == true) {
-		        alert("Operation already in progress...");
-                return;
-            }
-			zcash_cli_op_running = true;
-            zcash_output.empty();
-			var cmd = [zcashcli, $("#zcash-cli-run-cmd").val()];
-            var proc = cockpit.spawn(cmd, {
-                err: 'out'
-            });
-            proc.stream(proc_zcash_cli_output);
-            proc.fail(proc_zcash_cli_fail);
-        }
         function zcash_cli_input_run() {
 		    if (zcash_cli_op_running == true) {
 		        alert("Operation already in progress...");
@@ -861,9 +866,15 @@
 			    alert("Empty command!");
 			    return;
 			}
+			
+			zcash_output.empty();
 			zcash_cli_op_running = true;
-            zcash_output.empty();
-            var cmd = [zcashcli, $("#zcash-cli-input-cmd").val()];
+            
+			var cmd = [zcashcli];
+			var args = $("#zcash-cli-input-cmd").val().trim().split(" ");
+			for (var i in args) {
+				cmd.push(args[i]);
+			}
             var proc = cockpit.spawn(cmd, {
                 err: 'out'
             });
