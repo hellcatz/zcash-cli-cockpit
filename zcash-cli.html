@@ -567,7 +567,7 @@
 			zcash_op_status = $("#zcash-protect-status");
 			zcash_op_status.empty();
 			
-            zcash_cli_send(zcash_protect_taddresses.val().trim(), zcash_protect_zaddresses.val().trim(), maxamount, "", $("#zcash-protect-cmd"));
+            zcash_cli_send(zcash_protect_taddresses.val().trim(), zcash_protect_zaddresses.val().trim(), maxamount.toFixed(8), "", $("#zcash-protect-cmd"));
         }
 
 
@@ -689,7 +689,7 @@
 			$("#zcash-send-cmd").empty();
 			zcash_op_status.empty();
             
-            zcash_cli_send(zcash_send_from.val().trim(), zcash_send_to.val().trim(), amount, "", $("#zcash-send-cmd"));
+            zcash_cli_send(zcash_send_from.val().trim(), zcash_send_to.val().trim(), amount.toFixed(8), "", $("#zcash-send-cmd"));
         }
 
         function zcash_cli_send(taddr, zaddr, amount, memo, cmd_display) {
