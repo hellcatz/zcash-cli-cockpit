@@ -65,7 +65,7 @@
 
     <div class="container-fluid">
 
-        <h2 style="margin-top: 0px; padding-top: 0px; float: left;">zcash-cli-cockpit plugin (beta1)</h2>
+        <h2 style="margin-top: 0px; padding-top: 0px; float: left;">zcash-cli-cockpit plugin (beta1-testnet)</h2>
         <button class="btn btn-default btn-primary" style="margin-left:6px;" id="zcash-refresh">Reload</button>
 
         <div style="clear: both;"> </div>
@@ -74,7 +74,7 @@
         <table >
             <tr>
                 <td style="min-width: 280px;">
-                    <p style="padding-left: 12px;">
+                    <p style="padding-left: 6px; padding-top: 4px;">
                         Unprotected Balance: <b><span id="zcash-balance">...</span></b> TAZ<br />
                         Protected Balance: <b><span id="zcash-protected-balance">...</span></b> TAZ<br />
                         Block Height: <span id="zcash-block">...</span><br />
@@ -82,7 +82,7 @@
                     </p>
                 </td>
              </tr>
-<tr><td style="padding-left: 12px; padding-bottom: 12px;">
+<tr><td style="padding-left: 6px; padding-bottom: 12px;">
         <span id="zcash-errors" style="color: red;">...</span>
 </td></tr>
         </table>
@@ -93,8 +93,9 @@
             <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabBalances')">Balance</a></li>
             <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabProtect')">Protect</a></li>
             <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabSend')">Send</a></li>
-            <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabMining')">Mining</a></li>
+            <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabTransactions')">Transactions</a></li>
             <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabConsole')">Console</a></li>
+            <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabMining')">Mining</a></li>
         </ul>
 
 
@@ -109,9 +110,16 @@
 </p>
         </div>
 
+        <div id="zcashTabTransactions" class="tabcontent">
+<p>
+                       <label>Transactions</label><br />
+                        <span id="zcash-transaction-info">...</span>
+</p>
+        </div>
+		
         <div id="zcashTabMining" class="tabcontent">
 
-            <pre style="color: red;">FIXME, applying settings here causes zcashd to crash after a short period.</pre>
+            <pre style="color: red;">zcashd bug? applying settings here causes zcashd to crash after a short period.</pre>
 
             <table class="cockpit-form-table">
                 <tr>
@@ -134,10 +142,11 @@
         <div id="zcashTabConsole" class="tabcontent">
 
 
-            <table class="cockpit-form-table">
+            <table class="cockpit-form-table" style="width: 100%;">
                 <tr>
-                    <td style="padding-right: 6px;">
-                        <label class="control-label">zcash-cli</label>
+                    <td style="padding-right: 6px; width: 100%;">
+					<!--
+                        <label class="control-label">Select Command: </label>
                         <select id="zcash-cli-run-cmd">
 <option value="help">help</option>
 <option value="getinfo" selected=selected>getinfo</option>
@@ -145,10 +154,16 @@
 <option value="getwalletinfo">getwalletinfo</option>
 <option value="getmininginfo">getmininginfo</option>
 <option value="listunspent">listunspent</option>
+<option value="listtransactions">listtransactions</option>
 <option value="z_getoperationstatus">z_getoperationstatus</option>
 <option value="z_listaddresses">z_listaddresses</option>
 </select>
                         <button class="btn btn-default btn-primary" id="zcash-cli-run">Run</button>
+						<br />
+					-->
+						<label class="control-label">Command: </label>
+					    <input type="text" id="zcash-cli-input-cmd" style="width: calc(100% - 134px);" value="getinfo" />
+						<button class="btn btn-default btn-primary" id="zcash-cli-input-run">Run</button>
                     </td>
                 </tr>
             </table>
@@ -166,9 +181,12 @@
                         <div class="sendform">
                             <table>
                                 <tr>
-                                    <td style="padding-top:6px;">
-                                        <label for="zcash-protect-amount">Protect Amount</label><br />
-                                        <input id="zcash-protect-amount" type="text" value="1.00" />
+                                    <td>
+                                        <label for="zcash-protect-taddresses">From Address</label><br />
+                                        <select id="zcash-protect-taddresses">
+<option value="tn1">taddr</option>
+</select>
+                                        <br />
                                     </td>
                                 </tr>
                                 <tr>
@@ -177,15 +195,6 @@
                                         <select id="zcash-protect-zaddresses">
 <option value="tn1">zaddr</option>
 </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label for="zcash-protect-taddresses">From Address</label><br />
-                                        <select id="zcash-protect-taddresses">
-<option value="tn1">taddr</option>
-</select>
-                                        <br />
                                     </td>
                                 </tr>
                                 <tr>
@@ -201,9 +210,14 @@
                         </div>
 
                     </td>
+					<td valign="top" style="padding-left: 8px;">
+					    <p><span id="zcash-protect-cmd"> </span></p>
+						<p><span id="zcash-protect-status"> </span></p>
+					</td>
                 </tr>
             </table>
 
+			<p> </p>
 
         </div>
 
@@ -215,6 +229,10 @@
                 <tr>
                     <td valign="top">
                         <div class="sendform">
+                        <label>From Address</label><br/>
+                        <select id="zcash-send-from">
+<option value="tn1">addr</option>
+</select><br />
                         <label>Send Amount</label><br/>
                         <input type="text" id="zcash-send-amount" value="1.00" /> <br />
                         <label>To Address</label><br />
@@ -222,16 +240,16 @@
                         <label>Memo</label><br />
                         <input type="text" id="zcash-send-memo" /><br />
                         <label>Extra Fee</label><br />
-                        <input type="text" id="zcash-send-extrafee" value="0.0001" /> <br />
-                        <label>From Address</label><br/>
-                        <select id="zcash-send-from">
-<option value="tn1">addr</option>
-</select><br />
+                        <input type="text" id="zcash-send-extrafee" value="0.0001" /> <br />-
                         <div style="margin-top: 8px; margin-bottom: 4px;">
                           <button class="btn btn-default btn-primary" id="zcash-send">Send</button>
                         </div>
                         </div>
                     </td>
+					<td>
+					    <span id="zcash-send-cmd"> </span><br />
+						<span id="zcash-send-status"> </span><br />
+					</td>
                 </tr>
             </table>
 
@@ -245,7 +263,8 @@
         <p align="right">
          z.cash:
          <a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a> |
-         <a target="_blank" href="https://z.cash/blog/">Official Blog</a> |
+         <a target="_blank" href="https://github.com/zcash/zcash/wiki/Mining-Guide">Official Mining Guide</a> |
+		 <a target="_blank" href="https://z.cash/support/faq.html">Official FAQ</a> |
          <a target="_blank" href="https://forum.z.cash/">Official Forums</a>
         </p>
 
@@ -265,7 +284,8 @@
         var zcash_isrunning = false;
         var zcash_monitor_opid = ""; // operation id of transaction
         var zcash_getinfo_timeout = 0; // id for setTimeout
-
+        var zcash_cli_op_running = false;
+		
         // arrays to hold balances for addressses
         var unspent_balances = {}; // t-addr's
         var protected_balances = {}; // z-addr's
@@ -299,6 +319,9 @@
         var zcash_send_extra_fee = $("#zcash-send-extrafee");
         var zcash_send_memo = $("#zcash-send-memo");
 
+		var zcash_op_id;
+		var zcash_op_status;
+		
         //
         // UI Button Events
         //
@@ -307,7 +330,8 @@
         $("#zcash-protect").on("click", zcash_onClickProtect);
         $("#zcash-mine-start").on("click", zcash_mine_start);
         $("#zcash-cli-run").on("click", zcash_cli_run);
-
+		$("#zcash-cli-input-run").on("click", zcash_cli_input_run);
+		
         // use "ready" event to begin_application()
         $(document).ready(function() {
             begin_application();
@@ -339,6 +363,8 @@
         }
 
         function proc_zcash_cli_fail(e) {
+			zcash_monitor_opid = "";
+		    zcash_cli_op_running = false;
             alert(e);
         }
 
@@ -347,28 +373,40 @@
         //
 
         function begin_application() {
+			if (zcash_cli_op_running == true) {
+		        alert("Operation already in progress...");
+                return;
+            }		
+			zcash_cli_op_running = true;
+			
+			zcash_isrunning = false;
+			zcash_monitor_opid = "";
 
-            zcash_isrunning = false;
-            zcash_monitor_opid = "";
+			unspent_balances = {};
+			protected_balances = {};
+			zcash_send_zaddresses_info.empty();
 
-            unspent_balances = {};
-            protected_balances = {};
-            zcash_send_zaddresses_info.empty();
-
-            var cmd = ["pidof", "zcashd"];
-            var proc = cockpit.spawn(cmd, {
-                err: 'out'
-            });
-            proc.fail(check_zcash_detection_result);
-            proc.done(check_zcash_detection_result);
-            proc.stream(do_zcashd_detection);
+			var cmd = ["pidof", "zcashd"];
+			var proc = cockpit.spawn(cmd, {
+				err: 'out'
+			});
+			proc.fail(check_zcash_detection_result);
+			proc.done(check_zcash_detection_result);
+			proc.stream(do_zcashd_detection);
         }
 
         function check_zcash_detection_result() {
-            // TOOD, ask user to start zcashd process?
             if (!zcash_isrunning) {
                 alert("zcashd is not running!");
-            }
+				return;
+            }			
+			// populate nproc select options
+			var cmd = ["nproc"];
+			var proc = cockpit.spawn(cmd, {
+				err: 'out'
+			});
+			proc.done(proc_zcash_mine_nproc);
+			proc.fail(proc_zcash_cli_fail);
         }
 
         function do_zcashd_detection(data) {
@@ -377,13 +415,6 @@
                 if (parseInt(data) > 0) {
                     // zcashd is running
                     zcash_isrunning = true;
-                    // populate nproc select options
-                    var cmd = ["nproc"];
-                    var proc = cockpit.spawn(cmd, {
-                        err: 'out'
-                    });
-                    proc.done(proc_zcash_mine_nproc);
-                    proc.fail(proc_zcash_cli_fail);
                     // show pid of zcashd
                     $("#zcash-pid").empty();
                     $("#zcash-pid").append("(zcashd pid: " + data + ")");
@@ -401,6 +432,8 @@
 
             zcash_mine_nproc.val(parseInt(data));
 
+			zcash_cli_op_running = false;
+			
             zcash_cli_getinfo();
             zcash_cli_getmininginfo();
             zcash_cli_list_zaddr();
@@ -533,6 +566,10 @@
         }
 
         function zcash_onClickProtect() {
+            if (zcash_cli_op_running == true) {
+		        alert("Operation already in progress...");
+                return;
+            }
             // make sure we can get a valid balance from the t-addr
             if (unspent_balances[zcash_protect_taddresses.val()] == null) {
                 alert("No coins available to protect!");
@@ -540,20 +577,12 @@
             }
             var extrafee = round(parseFloat(zcash_protect_extra_fee.val()));
             var maxamount = round(unspent_balances[zcash_protect_taddresses.val()] - extrafee);
-            var amount = round(parseFloat(zcash_protect_amount.val()));
-            if (amount > maxamount) {
-                alert("Available amount is " + maxamount.toString());
-                return;
-            }
 
-            var msg = "";
-            msg += "Amount: " + amount.toString() + " TAZ\n";
-            msg += "Fees: " + extrafee.toString() + " TAZ\n";
-            msg += "Total Cost: " + round(amount + extrafee).toString() + " TAZ\n";
-            msg += "Balance: " + round(maxamount - amount).toString() + " TAZ";
-            alert(msg.toString());
-
-            zcash_cli_send(zcash_protect_taddresses.val(), zcash_protect_zaddresses.val(), amount, "");
+			zcash_op_status = $("#zcash-protect-status");			
+			$("#zcash-protect-cmd").empty();
+			zcash_op_status.empty();
+			
+            zcash_cli_send(zcash_protect_taddresses.val(), zcash_protect_zaddresses.val(), maxamount, "", $("#zcash-protect-cmd"));
         }
 
 
@@ -597,7 +626,7 @@
 
                 proc.done(zcash_cli_list_zaddr);
                 proc.fail(proc_zcash_cli_fail);
-		return;
+		        return;
             }
 
             // generate html
@@ -638,7 +667,14 @@
         }
 
         function zcash_onClickSend() {
-            // make sure we can get a valid balance from the t-addr
+            if (zcash_cli_op_running == true) {
+		        alert("Operation already in progress...");
+                return;
+            }
+            if (zcash_send_to.val().length <= 0) {
+                alert("Empty send to address.");
+                return;
+            }
             if (protected_balances[zcash_send_from.val()] == null) {
                 alert("Invalid from address.");
                 return;
@@ -662,19 +698,26 @@
             msg += "Total Cost: " + round(amount + extrafee).toString() + " TAZ\n";
             msg += "Balance: " + round(maxamount - amount).toString() + " TAZ";
             alert(msg.toString());
+
+			zcash_op_status = $("#zcash-send-status");
+			$("#zcash-send-cmd").empty();
+			zcash_op_status.empty();
             
-            zcash_cli_send(zcash_send_from.val(), zcash_send_to.val(), amount, "");
+            zcash_cli_send(zcash_send_from.val(), zcash_send_to.val(), amount, "", $("#zcash-send-cmd"));
         }
 
-        function zcash_cli_send(taddr, zaddr, amount, memo) {
-            var ztx = "[{\"amount\": " + amount.toString() + ", \"address\": \"" + zaddr.toString() + "\"}]";
+        function zcash_cli_send(taddr, zaddr, amount, memo, cmd_display) {
+            zcash_cli_op_running = true;
+						
+			var ztx = "[{\"amount\": " + amount.toString() + ", \"address\": \"" + zaddr.toString() + "\"}]";
             if (memo.length > 0)
                 ztx = "[{\"amount\": " + amount.toString() + ", \"memo\": \"" + memo.hexEncode() + "\", \"address\": \"" + zaddr.toString() + "\"}]";
 
             var cmd = [zcashcli, "z_sendmany", taddr, ztx];
-
-            alert(cmd.join(" "));
-            
+			if (cmd_display != null) {
+				cmd_display.empty();
+				cmd_display.append(cmd.join(" "));
+			}
             var proc = cockpit.spawn(cmd, {
                 err: 'out'
             });
@@ -685,8 +728,11 @@
         function proc_zcash_cli_send_opid(data) {
             // grab the opid
             zcash_monitor_opid = data.toString().trim();
-            zcash_output.empty();
-            zcash_output.append(zcash_monitor_opid);
+			
+			zcash_op_status.empty();
+			zcash_op_status.css("color", "#18C78F");
+			zcash_op_status.append("checking: " + zcash_monitor_opid);
+			
             // monitor operation id
             var cmd = [zcashcli, "z_getoperationstatus"];
             var proc = cockpit.spawn(cmd, {
@@ -701,15 +747,24 @@
         }
 
         function proc_zcash_cli_monitor_opid(data) {
-            var doMonitor = true;
 
+            var doMonitor = zcash_monitor_opid.length > 0;
+
+			zcash_output.empty();
+			zcash_output.append(data);
+			
+			zcash_op_status.empty();
+			zcash_op_status.css("color", "blue");
+									
             var jobj = JSON.parse(data);
             $.each(jobj, function(i) {
                 if (jobj[i]["id"] == zcash_monitor_opid) {
+				
+					zcash_op_status.append(jobj[i]["status"] + ": ");
+					zcash_op_status.append(zcash_monitor_opid.toString() + "; please wait...");
+				
                     if (jobj[i]["status"] != "executing") {
-                        doMonitor = false;
-                        zcash_output.empty();
-                        zcash_output.append(jobj[i]["status"]);
+                        doMonitor = false;				
                         // complete transaction by getting the result
                         var cmd = [zcashcli, "z_getoperationresult"];
                         var proc = cockpit.spawn(cmd, {
@@ -717,9 +772,6 @@
                         });
                         proc.done(proc_zcash_cli_result_opid);
                         proc.fail(proc_zcash_cli_fail);
-                    } else {
-                        zcash_output.empty();
-                        zcash_output.append("please wait..." + jobj[i]["status"] + " for " + (Math.floor(Date.now() / 1000) - parseInt(jobj[i]["creation_time"])).toString());
                     }
                 }
             });
@@ -730,16 +782,51 @@
         }
 
         function proc_zcash_cli_result_opid(data) {
-            zcash_output.empty();
-            zcash_output.append(data);
-
-            var jobj = JSON.parse(data);
+                        
+			var jobj = JSON.parse(data);
             $.each(jobj, function(i) {
                 if (jobj[i]["id"] == zcash_monitor_opid) {
+					zcash_op_status.empty();
+					zcash_op_status.append(jobj[i]["status"]);
+					if (jobj[i]["result"] != null) {
+						zcash_op_status.append(" txid: " + jobj[i]["result"]["txid"]);
+						zcash_op_status.css("color", "green");
+					}
+					else if (jobj[i]["error"] != null) {
+						zcash_op_status.append(": " + jobj[i]["error"]["message"]);
+						zcash_op_status.css("color", "red");
+					}
                     zcash_output.empty();
-                    zcash_output.append(jobj[i]["status"] + "\n");
                     zcash_output.append(data);
                 }
+            });
+			
+            zcash_monitor_opid = "";
+			zcash_cli_op_running = false;
+        }
+		
+		        //
+        // 	zcash-cli listunspent
+        //
+        function zcash_cli_listtransactions() {
+            var cmd = [zcashcli, "listtransactions"];
+            var proc = cockpit.spawn(cmd);
+            proc.done(proc_zcash_cli_listtransactions);
+            proc.fail(proc_zcash_cli_fail);
+        }
+
+        function proc_zcash_cli_listtransactions(data) {
+            var jobj = JSON.parse(data);
+            // gather up spendable balances
+            $.each(jobj, function(i) {
+			  jobj[i]["address"];
+			  jobj[i]["category"];
+			  jobj[i]["amount"];
+			  jobj[i]["confirmations"];
+			  if (jobj[i]["generated"] == "true")
+			  {
+			     // this coin was mined
+			  }
             });
         }
 
@@ -752,16 +839,39 @@
         // 	zcash-cli console function
         //
         function zcash_cli_run() {
-            var cmd = [zcashcli, $("#zcash-cli-run-cmd").val()];
+            if (zcash_cli_op_running == true) {
+		        alert("Operation already in progress...");
+                return;
+            }
+			zcash_cli_op_running = true;
+            zcash_output.empty();
+			var cmd = [zcashcli, $("#zcash-cli-run-cmd").val()];
             var proc = cockpit.spawn(cmd, {
                 err: 'out'
             });
             proc.stream(proc_zcash_cli_output);
             proc.fail(proc_zcash_cli_fail);
-            zcash_output.empty();
         }
-
+        function zcash_cli_input_run() {
+		    if (zcash_cli_op_running == true) {
+		        alert("Operation already in progress...");
+                return;
+            }
+			if ($("#zcash-cli-input-cmd").val().length <= 0) {
+			    alert("Empty command!");
+			    return;
+			}
+			zcash_cli_op_running = true;
+            zcash_output.empty();
+            var cmd = [zcashcli, $("#zcash-cli-input-cmd").val()];
+            var proc = cockpit.spawn(cmd, {
+                err: 'out'
+            });
+            proc.done(proc_zcash_cli_output);
+            proc.fail(proc_zcash_cli_fail);
+        }
         function proc_zcash_cli_output(data) {
+		    zcash_cli_op_running = false;
             zcash_output.append(document.createTextNode(data));
         }
     </script>
