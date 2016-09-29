@@ -3,7 +3,7 @@
 
     "tools": {
         "pinger": {
-            "label": "zcash",
+            "label": "zcash-cli",
             "path": "zcash-cli.html"
         }
     },
