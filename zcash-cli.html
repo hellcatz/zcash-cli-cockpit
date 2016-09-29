@@ -1,0 +1,770 @@
+<html>
+
+<head>
+    <title>zcash-cli-cockpit</title>
+    <meta charset="utf-8">
+    <link href="../base1/cockpit.css" type="text/css" rel="stylesheet">
+    <script src="../base1/jquery.js"></script>
+    <script src="../base1/cockpit.js"></script>
+    <style>
+        /* Style the list */
+        
+        ul.tab {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        /* Float the list items side by side */
+        
+        ul.tab li {
+            float: left;
+        }
+        /* Style the links inside the list items */
+        
+        ul.tab li a {
+            display: inline-block;
+            color: black;
+            text-align: center;
+            padding: 5px 12px;
+            text-decoration: none;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+        /* Change background color of links on hover */
+        
+        ul.tab li a:hover {
+            background-color: #ddd;
+        }
+        /* Create an active/current tablink class */
+        
+        ul.tab li a:focus,
+        .active {
+            background-color: #ccc;
+        }
+        /* Style the tab content */
+        
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+        
+        .sendform {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body class="page-ct">
+
+    <div class="container-fluid">
+
+        <h2 style="margin-top: 0px; padding-top: 0px; float: left;">zcash-cli-cockpit plugin (beta1)</h2>
+        <button class="btn btn-default btn-primary" style="margin-left:6px;" id="zcash-refresh">Reload</button>
+
+        <div style="clear: both;"> </div>
+        <hr style="margin-top: 0px; margin-bottom: 6px;" />
+
+        <table >
+            <tr>
+                <td style="min-width: 280px;">
+                    <p style="padding-left: 12px;">
+                        Unprotected Balance: <b><span id="zcash-balance">...</span></b> TAZ<br />
+                        Protected Balance: <b><span id="zcash-protected-balance">...</span></b> TAZ<br />
+                        Block Height: <span id="zcash-block">...</span><br />
+                        Difficulty: <span id="zcash-difficulty">...</span><br />
+                    </p>
+                </td>
+             </tr>
+<tr><td style="padding-left: 12px; padding-bottom: 12px;">
+        <span id="zcash-errors" style="color: red;">...</span>
+</td></tr>
+        </table>
+
+        <a name="tabs"></a>
+
+        <ul class="tab">
+            <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabBalances')">Balance</a></li>
+            <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabProtect')">Protect</a></li>
+            <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabSend')">Send</a></li>
+            <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabMining')">Mining</a></li>
+            <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabConsole')">Console</a></li>
+        </ul>
+
+
+        <div id="zcashTabBalances" class="tabcontent">
+<p>
+                       <label>Protected Coins</label><br />
+                        <span id="zcash-send-zaddresses-info">...</span>
+</p>
+<p>
+                       <label>Unprotected Coins</label><br />
+                        <span id="zcash-protect-taddresses-info">...</span>
+</p>
+        </div>
+
+        <div id="zcashTabMining" class="tabcontent">
+
+            <pre style="color: red;">FIXME, applying settings here causes zcashd to crash after a short period.</pre>
+
+            <table class="cockpit-form-table">
+                <tr>
+                    <td>
+                        generate
+                        <select id="zcash-mine-generate">
+<option value="true">true</option>
+<option value="false">false</option>
+</select> genproclimit
+                        <select id="zcash-mine-nproc">
+<option value="1">1</option>
+</select>
+                        <button class="btn btn-default btn-primary" id="zcash-mine-start">Apply</button>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+        <div id="zcashTabConsole" class="tabcontent">
+
+
+            <table class="cockpit-form-table">
+                <tr>
+                    <td style="padding-right: 6px;">
+                        <label class="control-label">zcash-cli</label>
+                        <select id="zcash-cli-run-cmd">
+<option value="help">help</option>
+<option value="getinfo" selected=selected>getinfo</option>
+<option value="getbalance">getbalance</option>
+<option value="getwalletinfo">getwalletinfo</option>
+<option value="getmininginfo">getmininginfo</option>
+<option value="listunspent">listunspent</option>
+<option value="z_getoperationstatus">z_getoperationstatus</option>
+<option value="z_listaddresses">z_listaddresses</option>
+</select>
+                        <button class="btn btn-default btn-primary" id="zcash-cli-run">Run</button>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+        <div id="zcashTabProtect" class="tabcontent">
+
+            <p>Your mined coins are currently stored in a t-addr. Let's make them private by sending them to a z-addr. <a href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a></p>
+
+            <table>
+                <tr>
+                    <td valign="top">
+
+                        <div class="sendform">
+                            <table>
+                                <tr>
+                                    <td style="padding-top:6px;">
+                                        <label for="zcash-protect-amount">Protect Amount</label><br />
+                                        <input id="zcash-protect-amount" type="text" value="1.00" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-top:6px;">
+                                        <label for="zcash-protect-zaddresses">To Address</label><br />
+                                        <select id="zcash-protect-zaddresses">
+<option value="tn1">zaddr</option>
+</select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="zcash-protect-taddresses">From Address</label><br />
+                                        <select id="zcash-protect-taddresses">
+<option value="tn1">taddr</option>
+</select>
+                                        <br />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-top:6px;">
+                                        <label for="zcash-protect-extrafee">Extra Fee</label><br />
+                                        <input id="zcash-protect-extrafee" type="text" value="0.0001" />
+                                    </td>
+                                </tr>
+                            </table>
+                            <div style="margin-top: 8px; margin-bottom: 4px;">
+                                <button class="btn btn-default btn-primary" id="zcash-protect">Protect</button>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+
+
+        </div>
+
+        <div id="zcashTabSend" class="tabcontent">
+
+            <p>Something about sending coins to your friends for pizza...</p>
+
+            <table class="cockpit-form-table">
+                <tr>
+                    <td valign="top">
+                        <div class="sendform">
+                        <label>Send Amount</label><br/>
+                        <input type="text" id="zcash-send-amount" value="1.00" /> <br />
+                        <label>To Address</label><br />
+                        <input type="text" id="zcash-send-to" /> <br />
+                        <label>Memo</label><br />
+                        <input type="text" id="zcash-send-memo" /><br />
+                        <label>Extra Fee</label><br />
+                        <input type="text" id="zcash-send-extrafee" value="0.0001" /> <br />
+                        <label>From Address</label><br/>
+                        <select id="zcash-send-from">
+<option value="tn1">addr</option>
+</select><br />
+                        <div style="margin-top: 8px; margin-bottom: 4px;">
+                          <button class="btn btn-default btn-primary" id="zcash-send">Send</button>
+                        </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+        <pre id="zcash-cli-output" style="border-top: 0px;">...</pre>
+
+        <p> </p>
+
+        <span id="zcash-pid" style="float: left;">...</span>
+        <p align="right">
+         z.cash:
+         <a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a> |
+         <a target="_blank" href="https://z.cash/blog/">Official Blog</a> |
+         <a target="_blank" href="https://forum.z.cash/">Official Forums</a>
+        </p>
+
+        <p> </p>
+    </div>
+
+    <script>
+        //
+        // Config Variables
+        //
+        var zcashcli = "zcash-cli";
+        var zcash_getinfo_rate = 30000;
+
+        //
+        // Global Variables
+        //
+        var zcash_isrunning = false;
+        var zcash_monitor_opid = ""; // operation id of transaction
+        var zcash_getinfo_timeout = 0; // id for setTimeout
+
+        // arrays to hold balances for addressses
+        var unspent_balances = {}; // t-addr's
+        var protected_balances = {}; // z-addr's
+        var protected_balance = 0.0; // z-addr total balance
+
+        // global zcash-cli output
+        var zcash_output = $("#zcash-cli-output");
+
+        // general zcash information
+        var zblock_output = $("#zcash-block");
+        var zdifficulty_output = $("#zcash-difficulty");
+        var zbalance_output = $("#zcash-balance");
+        var zerrors_output = $("#zcash-errors");
+
+        // mining tab
+        var zcash_mine_generate = $("#zcash-mine-generate");
+        var zcash_mine_nproc = $("#zcash-mine-nproc");
+
+        // protect tab
+        var zcash_protect_taddresses_info = $("#zcash-protect-taddresses-info")
+        var zcash_protect_taddresses = $("#zcash-protect-taddresses")
+        var zcash_protect_zaddresses = $("#zcash-protect-zaddresses");
+        var zcash_protect_extra_fee = $("#zcash-protect-extrafee");
+        var zcash_protect_amount = $("#zcash-protect-amount");
+
+        // send tab
+        var zcash_send_zaddresses_info = $("#zcash-send-zaddresses-info");
+        var zcash_send_from = $("#zcash-send-from");
+        var zcash_send_to = $("#zcash-send-to");
+        var zcash_send_amount = $("#zcash-send-amount");
+        var zcash_send_extra_fee = $("#zcash-send-extrafee");
+        var zcash_send_memo = $("#zcash-send-memo");
+
+        //
+        // UI Button Events
+        //
+        $("#zcash-refresh").on("click", begin_application);
+        $("#zcash-send").on("click", zcash_onClickSend);
+        $("#zcash-protect").on("click", zcash_onClickProtect);
+        $("#zcash-mine-start").on("click", zcash_mine_start);
+        $("#zcash-cli-run").on("click", zcash_cli_run);
+
+        // use "ready" event to begin_application()
+        $(document).ready(function() {
+            begin_application();
+        });
+
+        //
+        //  Helper Functions
+        //
+        function isEmpty(array) {
+            return !(array != null && array.length != null && array.length > 0);
+        }
+
+        function round(number, decimals) {
+            return Math.round(number * 100000000) / 100000000;
+        }
+
+        function showTab(evt, cityName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(cityName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        function proc_zcash_cli_fail(e) {
+            alert(e);
+        }
+
+        //
+        //  Main Application Entry Point
+        //
+
+        function begin_application() {
+
+            zcash_isrunning = false;
+            zcash_monitor_opid = "";
+
+            unspent_balances = {};
+            protected_balances = {};
+            zcash_send_zaddresses_info.empty();
+
+            var cmd = ["pidof", "zcashd"];
+            var proc = cockpit.spawn(cmd, {
+                err: 'out'
+            });
+            proc.fail(check_zcash_detection_result);
+            proc.done(check_zcash_detection_result);
+            proc.stream(do_zcashd_detection);
+        }
+
+        function check_zcash_detection_result() {
+            // TOOD, ask user to start zcashd process?
+            if (!zcash_isrunning) {
+                alert("zcashd is not running!");
+            }
+        }
+
+        function do_zcashd_detection(data) {
+            if (!isEmpty(data)) {
+                // did we get a pid of zcashd?
+                if (parseInt(data) > 0) {
+                    // zcashd is running
+                    zcash_isrunning = true;
+                    // populate nproc select options
+                    var cmd = ["nproc"];
+                    var proc = cockpit.spawn(cmd, {
+                        err: 'out'
+                    });
+                    proc.done(proc_zcash_mine_nproc);
+                    proc.fail(proc_zcash_cli_fail);
+                    // show pid of zcashd
+                    $("#zcash-pid").empty();
+                    $("#zcash-pid").append("(zcashd pid: " + data + ")");
+                }
+            }
+        }
+
+        function proc_zcash_mine_nproc(data) {
+            for (i = 1; i < parseInt(data); i++) {
+                zcash_mine_nproc.append($("<option/>", {
+                    value: i + 1,
+                    text: i + 1
+                }));
+            }
+
+            zcash_mine_nproc.val(parseInt(data));
+
+            zcash_cli_getinfo();
+            zcash_cli_getmininginfo();
+            zcash_cli_list_zaddr();
+            zcash_cli_listunspent();
+        }
+
+        //
+        // 	zcash-cli getinfo
+        //
+        function zcash_cli_getinfo() {
+            if (zcash_getinfo_timeout != 0) {
+                clearTimeout(zcash_getinfo_timeout);
+            }
+            var cmd = [zcashcli, "getinfo"];
+            var proc = cockpit.spawn(cmd, {
+                err: 'out'
+            });
+            proc.done(proc_zcash_cli_getinfo);
+            proc.fail(proc_zcash_cli_fail);
+
+            zbalance_output.empty();
+            zdifficulty_output.empty();
+            zblock_output.empty();
+            zerrors_output.empty();
+        }
+
+        function proc_zcash_cli_getinfo(data) {
+            var jobj = JSON.parse(data);
+
+            zblock_output.append(document.createTextNode(jobj["blocks"]));
+            zdifficulty_output.append(document.createTextNode(jobj["difficulty"]));
+            zbalance_output.append(document.createTextNode(jobj["balance"]));
+            zerrors_output.append(document.createTextNode(jobj["errors"]))
+
+            //zcash_getinfo_timeout = setTimeout(zcash_cli_getinfo, zcash_getinfo_rate);
+        }
+
+        //
+        // 	Mining Tab
+        //
+
+        //
+        // 	zcash-cli setgenerate
+        //
+        function zcash_mine_start() {
+            var cmd = [zcashcli, "setgenerate", zcash_mine_generate.val(), zcash_mine_nproc.val()];
+            var proc = cockpit.spawn(cmd, {
+                err: 'out'
+            });
+            proc.done(proc_zcash_mine_start_done);
+            proc.fail(proc_zcash_cli_fail);
+            zcash_output.empty();
+            zcash_output.append(document.createTextNode(cmd.join(" ")));
+        }
+
+        function proc_zcash_mine_start_done() {
+            setTimeout(zcash_cli_getmininginfo, 1000);
+        }
+
+        //
+        // 	zcash-cli getmininginfo
+        //
+        function zcash_cli_getmininginfo() {
+            var cmd = [zcashcli, "getmininginfo"];
+            var proc = cockpit.spawn(cmd, {
+                err: 'out'
+            });
+            proc.done(proc_zcash_cli_getmininginfo);
+            proc.fail(proc_zcash_cli_fail);
+            zcash_output.empty();
+        }
+
+        function proc_zcash_cli_getmininginfo(data) {
+            var jobj = JSON.parse(data);
+            var nproc = parseInt(jobj["genproclimit"]);
+
+            zcash_mine_generate.val((jobj["generate"] == true ? "true" : "false"));
+            zcash_mine_nproc.val(nproc);
+
+            var text = "";
+            if (jobj["generate"] == true) {
+                text += "Mining enabled, using " + nproc + " processors.";
+            } else {
+                text += "Mining is not enabled.";
+            }
+            zcash_output.append(document.createTextNode(text));
+        }
+
+        //
+        // Protect Tab
+        //
+
+        //
+        // 	zcash-cli listunspent
+        //
+        function zcash_cli_listunspent() {
+            var cmd = [zcashcli, "listunspent"];
+            var proc = cockpit.spawn(cmd);
+            proc.done(proc_zcash_cli_listunspent);
+            proc.fail(proc_zcash_cli_fail);
+            zcash_protect_taddresses.empty();
+            zcash_protect_taddresses_info.empty();
+            zcash_protect_taddresses_info.append("<small><i>No coins available. Start mining or ask someone for some TAZ. See <a target=\"_blank\" href=\"http://faucet.zeropond.com/\">faucet.zeropond.com</a></i></small>");
+        }
+
+        function proc_zcash_cli_listunspent(data) {
+            var jobj = JSON.parse(data);
+            // gather up spendable balances
+            $.each(jobj, function(i) {
+                if (jobj[i]["spendable"] == true) {
+                    if (!unspent_balances.hasOwnProperty(jobj[i]["address"])) {
+                        unspent_balances[jobj[i]["address"]] = jobj[i]["amount"];
+                    } else {
+                        unspent_balances[jobj[i]["address"]] = round(unspent_balances[jobj[i]["address"]] + jobj[i]["amount"]);
+                    }
+                }
+            });
+            zcash_protect_taddresses_info.empty();
+            // generate html
+            for (var name in unspent_balances) {
+                var shortname = name.substring(0, 7) + "..." + name.substring((name.toString().length - 7));
+                zcash_protect_taddresses.append($("<option/>", {
+                    value: name,
+                    text: shortname
+                }));
+                // generate html for balances
+                var html = " <small>Balance:</small> <b>" + unspent_balances[name] + "</b> <small>TAZ</small> <i><small>t-addr:</small> " + name + "</i><br />";
+                zcash_protect_taddresses_info.append(html);
+            }
+        }
+
+        function zcash_onClickProtect() {
+            // make sure we can get a valid balance from the t-addr
+            if (unspent_balances[zcash_protect_taddresses.val()] == null) {
+                alert("No coins available to protect!");
+                return;
+            }
+            var extrafee = round(parseFloat(zcash_protect_extra_fee.val()));
+            var maxamount = round(unspent_balances[zcash_protect_taddresses.val()] - extrafee);
+            var amount = round(parseFloat(zcash_protect_amount.val()));
+            if (amount > maxamount) {
+                alert("Available amount is " + maxamount.toString());
+                return;
+            }
+
+            var msg = "";
+            msg += "Amount: " + amount.toString() + " TAZ\n";
+            msg += "Fees: " + extrafee.toString() + " TAZ\n";
+            msg += "Total Cost: " + round(amount + extrafee).toString() + " TAZ\n";
+            msg += "Balance: " + round(maxamount - amount).toString() + " TAZ";
+            alert(msg.toString());
+
+            zcash_cli_send(zcash_protect_taddresses.val(), zcash_protect_zaddresses.val(), amount, "");
+        }
+
+
+        //
+        // Send Tab
+        //
+
+        //
+        // 	zcash-cli z_listaddresses
+        //
+        function zcash_cli_list_zaddr() {
+            var cmd = [zcashcli, "z_listaddresses"];
+            var proc = cockpit.spawn(cmd, {
+                err: 'out'
+            });
+            proc.done(proc_zcash_cli_zaddr);
+            proc.fail(proc_zcash_cli_fail);
+        }
+
+        function proc_zcash_cli_zaddr(data) {
+            var jobj = JSON.parse(data);
+
+            zcash_send_from.empty();
+            zcash_protect_zaddresses.empty();
+
+            protected_balance = 0.0;
+            // gather up spendable balances
+            $.each(jobj, function(i) {
+                protected_balances[jobj[i]] = 0.0;
+            });
+
+            // do we need to generate a zaddr?
+            if (protected_balances[jobj[0]] == null) {
+
+                alert("Generating new private z-addr...");
+
+                var cmd = [zcashcli, "z_getnewaddress"];
+                var proc = cockpit.spawn(cmd, {
+                    err: 'out'
+                });
+
+                proc.done(zcash_cli_list_zaddr);
+                proc.fail(proc_zcash_cli_fail);
+		return;
+            }
+
+            // generate html
+            for (var name in protected_balances) {
+                var shortname = name.substring(0, 7) + "..." + name.substring((name.toString().length - 7));
+                // append to protect tab
+                zcash_protect_zaddresses.append($("<option/>", {
+                    value: name,
+                    text: shortname
+                }));
+                // append to send tab
+                zcash_send_from.append($("<option/>", {
+                    value: name,
+                    text: shortname
+                }));
+                // generate html for balances
+                var html = " <small>Balance:</small> <b><span id=\"" + name + "\">...</span></b> <small>TAZ</small> <i><small>z-addr:</small> " + name + "</i><br />";
+                zcash_send_zaddresses_info.append(html);
+                // lookup balance for zaddr
+                zcash_cli_getbalance_for_zaddr(name);
+            }
+        }
+
+        function zcash_cli_getbalance_for_zaddr(zaddr) {
+            var cmd = [zcashcli, "z_getbalance", zaddr];
+            var proc = cockpit.spawn(cmd, {
+                err: 'out'
+            });
+            proc.done(function(data) {
+                protected_balances[zaddr] = round(parseFloat(data));
+                protected_balance = round(protected_balance + protected_balances[zaddr]);
+                $("#" + zaddr).empty();
+                $("#" + zaddr).append(protected_balances[zaddr]);
+                $("#zcash-protected-balance").empty();
+                $("#zcash-protected-balance").append(protected_balance.toString());
+            });
+            proc.fail(proc_zcash_cli_fail);
+        }
+
+        function zcash_onClickSend() {
+            // make sure we can get a valid balance from the t-addr
+            if (protected_balances[zcash_send_from.val()] == null) {
+                alert("Invalid from address.");
+                return;
+            }
+            var extrafee = round(parseFloat(zcash_send_extra_fee.val()));
+            var maxamount = round(protected_balances[zcash_send_from.val()] - extrafee);
+            if (maxamount <= 0)
+            {
+                alert("Insufficient funds for transaction.");
+                return;
+            }
+            var amount = round(parseFloat(zcash_send_amount.val()));
+            if (amount > maxamount) {
+                alert("Available amount is " + maxamount.toString());
+                return;
+            }
+            
+            var msg = "";
+            msg += "Amount: " + amount.toString() + " TAZ\n";
+            msg += "Fees: " + extrafee.toString() + " TAZ\n";
+            msg += "Total Cost: " + round(amount + extrafee).toString() + " TAZ\n";
+            msg += "Balance: " + round(maxamount - amount).toString() + " TAZ";
+            alert(msg.toString());
+            
+            zcash_cli_send(zcash_send_from.val(), zcash_send_to.val(), amount, "");
+        }
+
+        function zcash_cli_send(taddr, zaddr, amount, memo) {
+            var ztx = "[{\"amount\": " + amount.toString() + ", \"address\": \"" + zaddr.toString() + "\"}]";
+            if (memo.length > 0)
+                ztx = "[{\"amount\": " + amount.toString() + ", \"memo\": \"" + memo.hexEncode() + "\", \"address\": \"" + zaddr.toString() + "\"}]";
+
+            var cmd = [zcashcli, "z_sendmany", taddr, ztx];
+
+            alert(cmd.join(" "));
+            
+            var proc = cockpit.spawn(cmd, {
+                err: 'out'
+            });
+            proc.done(proc_zcash_cli_send_opid);
+            proc.fail(proc_zcash_cli_fail);
+        }
+
+        function proc_zcash_cli_send_opid(data) {
+            // grab the opid
+            zcash_monitor_opid = data.toString().trim();
+            zcash_output.empty();
+            zcash_output.append(zcash_monitor_opid);
+            // monitor operation id
+            var cmd = [zcashcli, "z_getoperationstatus"];
+            var proc = cockpit.spawn(cmd, {
+                err: 'out'
+            });
+            proc.done(proc_zcash_cli_monitor_opid);
+            proc.fail(proc_zcash_cli_fail);
+        }
+
+        function do_zcash_cli_monitor_opid() {
+            proc_zcash_cli_send_opid(zcash_monitor_opid);
+        }
+
+        function proc_zcash_cli_monitor_opid(data) {
+            var doMonitor = true;
+
+            var jobj = JSON.parse(data);
+            $.each(jobj, function(i) {
+                if (jobj[i]["id"] == zcash_monitor_opid) {
+                    if (jobj[i]["status"] != "executing") {
+                        doMonitor = false;
+                        zcash_output.empty();
+                        zcash_output.append(jobj[i]["status"]);
+                        // complete transaction by getting the result
+                        var cmd = [zcashcli, "z_getoperationresult"];
+                        var proc = cockpit.spawn(cmd, {
+                            err: 'out'
+                        });
+                        proc.done(proc_zcash_cli_result_opid);
+                        proc.fail(proc_zcash_cli_fail);
+                    } else {
+                        zcash_output.empty();
+                        zcash_output.append("please wait..." + jobj[i]["status"] + " for " + (Math.floor(Date.now() / 1000) - parseInt(jobj[i]["creation_time"])).toString());
+                    }
+                }
+            });
+
+            if (doMonitor) {
+                setTimeout(do_zcash_cli_monitor_opid, 1000);
+            }
+        }
+
+        function proc_zcash_cli_result_opid(data) {
+            zcash_output.empty();
+            zcash_output.append(data);
+
+            var jobj = JSON.parse(data);
+            $.each(jobj, function(i) {
+                if (jobj[i]["id"] == zcash_monitor_opid) {
+                    zcash_output.empty();
+                    zcash_output.append(jobj[i]["status"] + "\n");
+                    zcash_output.append(data);
+                }
+            });
+        }
+
+
+        //
+        // Console Tab
+        //
+
+        //
+        // 	zcash-cli console function
+        //
+        function zcash_cli_run() {
+            var cmd = [zcashcli, $("#zcash-cli-run-cmd").val()];
+            var proc = cockpit.spawn(cmd, {
+                err: 'out'
+            });
+            proc.stream(proc_zcash_cli_output);
+            proc.fail(proc_zcash_cli_fail);
+            zcash_output.empty();
+        }
+
+        function proc_zcash_cli_output(data) {
+            zcash_output.append(document.createTextNode(data));
+        }
+    </script>
+</body>
+
+</html>

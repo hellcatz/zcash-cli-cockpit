@@ -1,0 +1,12 @@
+{
+    "version": 0,
+
+    "tools": {
+        "pinger": {
+            "label": "zcash",
+            "path": "zcash-cli.html"
+        }
+    },
+
+    "content-security-policy": "default-src 'self' 'unsafe-inline' 'unsafe-eval'"
+}
