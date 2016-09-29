@@ -9,8 +9,10 @@ Cockpit based zcash-cli command line interface.
 # installing cockpit plugin
 <p>Login to your linux server with your user account to get started.</p>
 
-<p>It is expected that you have already followed the Zcash Beta Guide. Downloaded and built from source zcash.</p>
-<p>Second, the cockpit plugin requires zcash-cli to be in your system path. It is possible to create a symbolic link to the executable.</p>
+<p>It is expected that you have followed the <a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a>, downloaded and built zcash from source.</p>
+
+<p>zcash-cli cockpit plugin requires zcash-cli to be in your system path. It is possible to create a symbolic link to the executable.</p>
+
 <pre>cd zcash_dir
 sudo ln -sr ./src/zcash-cli /usr/bin/zcash-cli</pre>
 
@@ -21,7 +23,7 @@ sudo ln -sr ./src/zcash-cli /usr/bin/zcash-cli</pre>
 <pre>cd ~/.local/share/cockpit/
 git clone https://github.com/hellcatz/zcash-cli-cockpit</pre>
 
-Upgrading to latest revsion?
+<p>Just pull the latest if you already cloned the repostiory.</p>
 <pre>git pull</pre>
 
 <p>Open https://localhost:9090/ in your web browser and login to cockpit.</p>
