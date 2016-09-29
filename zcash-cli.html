@@ -540,7 +540,7 @@
             zcash_protect_taddresses_info.empty();
             // generate html
             for (var name in unspent_balances) {
-                var shortname = name.substring(0, 7) + "..." + name.substring((name.toString().length - 7));
+                var shortname = name.substring(0, 7) + "..." + name.substring((name.toString().length - 7)).trim();
                 zcash_protect_taddresses.append($("<option/>", {
                     value: name,
                     text: shortname
@@ -557,17 +557,17 @@
                 return;
             }
             // make sure we can get a valid balance from the t-addr
-            if (unspent_balances[zcash_protect_taddresses.val()] == null) {
+            if (unspent_balances[zcash_protect_taddresses.val().trim()] == null) {
                 alert("No coins available to protect!");
                 return;
             }
-            var extrafee = round(parseFloat(zcash_protect_extra_fee.val()));
-            var maxamount = round(unspent_balances[zcash_protect_taddresses.val()] - extrafee);
+            var extrafee = round(parseFloat(zcash_protect_extra_fee.val().trim()));
+            var maxamount = round(unspent_balances[zcash_protect_taddresses.val().trim()] - extrafee);
 
 			zcash_op_status = $("#zcash-protect-status");
 			zcash_op_status.empty();
 			
-            zcash_cli_send(zcash_protect_taddresses.val(), zcash_protect_zaddresses.val(), maxamount, "", $("#zcash-protect-cmd"));
+            zcash_cli_send(zcash_protect_taddresses.val().trim(), zcash_protect_zaddresses.val().trim(), maxamount, "", $("#zcash-protect-cmd"));
         }
 
 
