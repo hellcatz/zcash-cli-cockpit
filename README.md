@@ -6,6 +6,16 @@ Cockpit based zcash-cli command line interface.
          <a target="_blank" href="https://z.cash/blog/">Official Blog</a> |
          <a target="_blank" href="https://forum.z.cash/">Official Forums</a>
         </p>
+# cockpit required
+<p>This requires "Cockpit" to work.</p>
+<a href="http://cockpit-project.org/12">http://cockpit-project.org/12</a>
+
+<p>Get Cockpit running...(click on your distro for instructions)</p>
+<a href="http://cockpit-project.org/running.html6">http://cockpit-project.org/running.html6</a>
+
+<p>The plugin was initially created using this tutorial:</p>
+<a href="http://stef.thewalter.net/creating-plugins-for-the-cockpit-user-interface.html9">http://stef.thewalter.net/creating-plugins-for-the-cockpit-user-interface.html9</a>
+
 # installing cockpit plugin
 <p>Login to your linux server with your user account to get started.</p>
 
