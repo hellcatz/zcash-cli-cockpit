@@ -1,20 +1,20 @@
 # zcash-cli-cockpit
-Cockpit based zcash-cli command line interface.
-        <p align="right">
-         z.cash:
-         <a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a> |
-         <a target="_blank" href="https://z.cash/blog/">Official Blog</a> |
-         <a target="_blank" href="https://forum.z.cash/">Official Forums</a>
-        </p>
+<p style="float: left;">Cockpit based zcash-cli command line interface.</p>
+
+    <p>
+      z.cash:
+      <a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a> |
+      <a target="_blank" href="https://github.com/zcash/zcash/wiki/Mining-Guide">Official Mining Guide</a> |
+      <a target="_blank" href="https://z.cash/support/faq.html">Official FAQ</a> |
+      <a target="_blank" href="https://forum.z.cash/">Official Forums</a>
+    </p>
+
 # cockpit required
 <p>This requires "Cockpit" to work.</p>
 <a href="http://cockpit-project.org/12">http://cockpit-project.org/12</a>
 
 <p>Get Cockpit running...(click on your distro for instructions)</p>
 <a href="http://cockpit-project.org/running.html6">http://cockpit-project.org/running.html6</a>
-
-<p>The plugin was initially created using this tutorial:</p>
-<a href="http://stef.thewalter.net/creating-plugins-for-the-cockpit-user-interface.html9">http://stef.thewalter.net/creating-plugins-for-the-cockpit-user-interface.html9</a>
 
 # installing cockpit plugin
 <p>Login to your linux server with your user account to get started.</p>
@@ -34,7 +34,8 @@ sudo ln -sr ./src/zcash-cli /usr/bin/zcash-cli</pre>
 git clone https://github.com/hellcatz/zcash-cli-cockpit</pre>
 
 <p>Just pull the latest if you already cloned the repostiory.</p>
-<pre>git pull</pre>
+<pre>cd ~/.local/share/cockpit/zcash-cli-cockpit
+git pull</pre>
 
 <p>Open https://localhost:9090/ in your web browser and login to cockpit.</p>
 <p>Look for a new menu entry under "Tools" called "zcash-cli".</p>
