@@ -1,25 +1,27 @@
 # zcash-cli-cockpit
-<p style="float: left;">Cockpit based zcash-cli command line interface.</p>
+<p style="float: left;">zcash-cli cockpit plugin web browser ui command line interface.</p>
 
-    <p>
-      z.cash:
-      <a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a> |
-      <a target="_blank" href="https://github.com/zcash/zcash/wiki/Mining-Guide">Official Mining Guide</a> |
-      <a target="_blank" href="https://z.cash/support/faq.html">Official FAQ</a> |
-      <a target="_blank" href="https://forum.z.cash/">Official Forums</a>
-    </p>
+z.cash:
+<a target="_blank" href="https://github.com/zcash/zcash/blob/v1.0.0-beta2/doc/payment-api.md">Payment API</a> |
+<a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a> |
+<a target="_blank" href="https://github.com/zcash/zcash/wiki/Mining-Guide">Official Mining Guide</a> |
+<a target="_blank" href="https://z.cash/support/faq.html">Official FAQ</a> |
+<a target="_blank" href="https://forum.z.cash/">Official Forums</a>
 
-# cockpit required
-<p>This requires "Cockpit" to work.</p>
-<a href="http://cockpit-project.org/12">http://cockpit-project.org/12</a>
+## cockpit required on linux server
+Fedora Server comes with Cockpit installed.
 
-<p>Get Cockpit running...(click on your distro for instructions)</p>
-<a href="http://cockpit-project.org/running.html6">http://cockpit-project.org/running.html6</a>
+Installing Cockpit in Ubuntu 16.04
 
-# installing cockpit plugin
-<p>Login to your linux server with your user account to get started.</p>
+http://www.itzgeek.com/how-tos/linux/ubuntu-how-tos/install-cockpit-on-ubuntu-16-04.html
 
+Access cockpit at the following url: https://localhost:9090/
+
+## compile zcash from source
 <p>It is expected that you have followed the <a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a>, downloaded and built zcash from source.</p>
+
+## installing cockpit plugin
+Login to your linux server with your user account to get started.
 
 <p>zcash-cli cockpit plugin requires zcash-cli to be in your system path. It is possible to create a symbolic link to the executable.</p>
 
