@@ -1,7 +1,7 @@
 # zcash-cli-cockpit
 <p style="float: left;">zcash-cli cockpit plugin web browser ui command line interface.</p>
 
-z.cash:
+<a target="_blank" href="http://z.cash/">z.cash</a>: 
 <a target="_blank" href="https://github.com/zcash/zcash/blob/v1.0.0-beta2/doc/payment-api.md">Payment API</a> |
 <a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a> |
 <a target="_blank" href="https://github.com/zcash/zcash/wiki/Mining-Guide">Official Mining Guide</a> |
@@ -18,9 +18,11 @@ http://www.itzgeek.com/how-tos/linux/ubuntu-how-tos/install-cockpit-on-ubuntu-16
 Access cockpit at the following url: https://localhost:9090/
 
 ## compile zcash from source
-<p>It is expected that you have followed the <a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a>, downloaded and built zcash from source.</p>
+It is expected that you have followed the <a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a>, downloaded and built zcash from source.
 
 ## installing cockpit plugin
+nproc and pidof are required by this plugin.
+
 Login to your linux server with your user account to get started.
 
 <p>zcash-cli cockpit plugin requires zcash-cli to be in your system path. It is possible to create a symbolic link to the executable.</p>
