@@ -620,14 +620,65 @@
       proc.fail(proc_zcash_cli_fail);
     }
 
+    var zcash_balances = [];
+
     function proc_zcash_cli_z_gettotalbalance(data) {
       var jobj = JSON.parse(data);
+
       ztbalance_output.empty();
       zpbalance_output.empty();
       zbalance_output.empty();
+
+      zcash_balances = [jobj["transparent"], jobj["private"], jobj["total"]];
+
+      ztbalance_output.css("color", "");
+      zpbalance_output.css("color", "");
+      zbalance_output.css("color", "");
+
       ztbalance_output.append(document.createTextNode(jobj["transparent"]));
       zpbalance_output.append(document.createTextNode(jobj["private"]));
       zbalance_output.append(document.createTextNode(jobj["total"]));
+
+      zcash_cli_z_gettotalbalance_unconfirmed();
+    }
+
+    function zcash_cli_z_gettotalbalance_unconfirmed() {
+      var cmd = [zcashcli, "z_gettotalbalance", "0"];
+      var proc = cockpit.spawn(cmd, {
+        err: 'out'
+      });
+      proc.done(proc_zcash_cli_z_gettotalbalance_unconfirmed);
+      proc.fail(proc_zcash_cli_fail);
+    }
+
+    function proc_zcash_cli_z_gettotalbalance_unconfirmed(data) {
+      var jobj = JSON.parse(data);
+
+      var uconf_zcash_balances = [jobj["transparent"], jobj["private"], jobj["total"]];
+
+      if (uconf_zcash_balances[0] != zcash_balances[0]) {
+        ztbalance_output.css("color", "red");
+        ztbalance_output.empty();
+        ztbalance_output.append("*" + uconf_zcash_balances[0].toString());
+        zerrors_output.empty();
+        zerrors_output.append("* Showing unconfirmed balance because of immature transaction.");
+      }
+
+      if (uconf_zcash_balances[1] != zcash_balances[1]) {
+        zpbalance_output.css("color", "red");
+        zpbalance_output.empty();
+        zpbalance_output.append("*" + uconf_zcash_balances[1].toString());
+        zerrors_output.empty();
+        zerrors_output.append("* Showing unconfirmed balance because of immature transaction.");
+      }
+
+      if (uconf_zcash_balances[2] != zcash_balances[2]) {
+        zbalance_output.css("color", "red");
+        zbalance_output.empty();
+        zbalance_output.append("*" + uconf_zcash_balances[2].toString());
+        zerrors_output.empty();
+        zerrors_output.append("* Showing unconfirmed balance because of immature transaction.");
+      }
 
       zcash_cli_getnettotals();
     }
