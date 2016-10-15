@@ -4,8 +4,10 @@
   <title>zcash-cli-cockpit</title>
   <meta charset="utf-8">
   <link href="../base1/cockpit.css" type="text/css" rel="stylesheet">
+  <link href="jquery.dataTables.min.css" type="text/css" rel="stylesheet">
   <script src="../base1/jquery.js"></script>
   <script src="../base1/cockpit.js"></script>
+  <script src="jquery.dataTables.min.js"></script>
   <style>
     ul.tab {
       list-style-type: none;
@@ -137,25 +139,12 @@
     <a name="tabs"></a>
 
     <ul class="tab">
-      <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabBalances')">Balance</a></li>
+      <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabBlocks')">Blockchain</a></li>
       <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabProtect')">Protect</a></li>
       <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabSend')">Send</a></li>
       <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabConsole')">Console</a></li>
       <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabMining')">Mining</a></li>
     </ul>
-
-
-    <div id="zcashTabBalances" class="tabcontent">
-      <p>Balances shown here are from the blockchain. Allow several minutes for recent transactions to be confirmed in the blockchain. This tab does not automatically refresh.</p>
-      <p>
-        <label>Protected Coins</label> <i>(Double Click on z-addr to view private transactions)</i><br />
-        <span id="zcash-send-zaddresses-info">...</span>
-      </p>
-      <p>
-        <label>Unprotected Coins</label> <a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabTransactions')">(Recent Unprotected Transactions)</a><br />
-        <span id="zcash-protect-taddresses-info">...</span>
-      </p>
-    </div>
 
     <div id="zcashTabTransactions" class="tabcontent">
       <p>
@@ -191,8 +180,12 @@
         </div>
 </td>
 <td valign="top" style="padding-left: 8px;">
-        <p><span id="zcash-protect-cmd"> </span></p>
-        <p><span id="zcash-protect-status"> </span></p>
+
+      <p>
+        <label>Unprotected Coins</label> <a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabTransactions')">(Recent Unprotected Transactions)</a><br />
+        <span id="zcash-protect-taddresses-info">...</span>
+      </p>
+
 </td>
 </tr>
 </table>
@@ -248,6 +241,16 @@
 
           </td>
         </tr>
+        <tr>
+          <td colspan="2" style="padding-top: 8px;">
+
+      <p>
+        <label>Protected Coins</label> <i>(Double Click on z-addr to view private transactions)</i><br />
+        <span id="zcash-send-zaddresses-info">...</span>
+      </p>
+
+          </td>
+        </tr>
       </table>
 
       <p> </p>
@@ -297,6 +300,13 @@
      <span id="zcash-wait-status"></span>
      <div style="clear: both;"> </div>
     </div>
+
+    <div id="zcashTabBlocks" class="tabcontent">
+      <p>History of the last 20 blocks observed will be shown here.</p>
+      <table id="zcash-table-blocks" class="display" width="100%"></table>
+      <table id="zcash-table-transactions" class="display" width="100%"></table>
+    </div>
+
 
     <pre id="zcash-cli-output" style="border-top: 0px;">...</pre>
 
@@ -398,6 +408,34 @@
       zcash_dialog_modal.style.display = "none";
     }
 
+    var zcash_blocks_table = $('#zcash-table-blocks').DataTable( {
+        searching: false,
+        lengthChange: false,
+        paging: false,
+        info: false,
+        scrollY: "200px",
+        scrollCollapse: true,
+        order: [[ 0, "desc" ]],
+        columns: [
+            { title: "Blocks" },
+            { title: "Timestamp" },
+            { title: "Trnxs" },
+            { title: "Size" }
+        ]
+    } );
+
+    var zcash_transaction_table = $("#zcash-table-transactions").DataTable( {
+        searching: false,
+        lengthChange: false,
+        paging: false,
+        info: false,
+        order: [[ 0, "desc" ]],
+        columns: [
+            { title: "Transaction Id" },
+            { title: "T-ADDR Value" }
+        ]
+    } );
+
     //
     // UI Button Events
     //
@@ -450,11 +488,11 @@
           (c & 0x1f) << 6 | arr[i++] & 0x3f :
           c
         );
-      return s
+      return s;
     }
 
     function isEmpty(data) {
-      return (data == null || data.length == null || data.length == 0);
+      return (data == null || data == 0 || data.length == null || data.toString().length == 0);
     };
 
     function round(number) {
@@ -592,6 +630,8 @@
       proc.fail(proc_zcash_cli_fail);
     }
 
+    var lastblock = 0;
+
     function proc_zcash_cli_getinfo(data) {
       var jobj = JSON.parse(data);
 
@@ -606,6 +646,153 @@
       zconnections_output.append(document.createTextNode(jobj["connections"]));
 
       zcash_cli_z_gettotalbalance();
+
+      // detect new blocks and do extra work
+      if (lastblock != parseInt(jobj["blocks"])) {
+
+        var missedblocks = (lastblock == 0 ? 3 : Math.min(10, (parseInt(jobj["blocks"]) - lastblock)));
+
+        lastblock = parseInt(jobj["blocks"]);
+        
+        for (i=((lastblock + 1) - missedblocks); i < lastblock; i++) {
+           zcash_blocks_table.row.add([i,"...","...","..."]);
+           zcash_cli_z_getblockinfo(i);
+        }
+        zcash_blocks_table.row.add([lastblock,"...","...","..."]);
+        zcash_cli_z_getblockinfo(lastblock);
+
+        if (zcash_blocks_table.rows().data().length > 20) {
+           zcash_blocks_table.rows(0).remove();
+        }
+        zcash_blocks_table.draw();
+
+        if (zcash_transaction_table.rows().data().length > 20) {
+          while (zcash_transaction_table.rows().data().length > 20) {
+             zcash_transaction_table.rows(0).remove().draw();
+          }
+        }
+      }
+    }
+
+    function zcash_cli_z_getblockinfo(block) {
+      var cmd = [zcashcli, "getblockhash", block.toString()];
+      var proc = cockpit.spawn(cmd, {
+        err: 'out'
+      });
+      proc.done(proc_zcash_cli_z_getblockinfo);
+      proc.fail(proc_zcash_cli_fail);
+    }
+    function proc_zcash_cli_z_getblockinfo(bhash) {
+      // look info up for block hash
+      var cmd = [zcashcli, "getblock", bhash.toString().trim()];
+      var proc = cockpit.spawn(cmd, {
+        err: 'out'
+      });
+      proc.done(proc_zcash_cli_z_getblock);
+      proc.fail(proc_zcash_cli_fail);
+    }
+    function getblockrowindex(block) {
+      var indexes = zcash_blocks_table.rows().eq( 0 ).filter( function (rowIdx) {
+        return zcash_blocks_table.cell( rowIdx, 0 ).data() == block ? true : false;
+      } );
+      return indexes[0];
+    }
+    function proc_zcash_cli_z_getblock(data) {
+      var jobj = JSON.parse(data);
+
+      var rowData = getblockrowindex(parseInt(jobj["height"]));
+      zcash_blocks_table.cell(rowData, 1).data(parseInt(jobj["time"]));
+      zcash_blocks_table.cell(rowData, 2).data($(jobj["tx"]).size());
+      zcash_blocks_table.cell(rowData, 3).data(parseInt(jobj["size"]));
+      zcash_blocks_table.draw();
+      
+      $(jobj["tx"]).each(function( index ) {
+        zcash_transaction_table.row.add([jobj["tx"][index], ""]);
+        zcash_cli_z_gettxout(jobj["tx"][index], 0);
+      });
+      zcash_transaction_table.draw();
+      // TODO
+/*
+{
+    "hash" : "0012652590ad920bca24f4dcc5d8839ad577edf8e750313e6e1c1a4581de7eb1",
+    "confirmations" : 2,
+    "size" : 1620,
+    "height" : 2853,
+    "version" : 4,
+    "merkleroot" : "82e69a0040050f4783ab433464b8871a93ed43d5c1dc82bee441c5e04a325811",
+    "tx" : [
+        "82e69a0040050f4783ab433464b8871a93ed43d5c1dc82bee441c5e04a325811"
+    ],
+    "time" : 1476051474,
+    "nonce" : "00000138b524c6bff1568f319d6473e50f5f701ae1df0fc88b0d0c5349f50000",
+    "solution" : "0040466522caaea0de764343e050c12ce36118b6c4096e79c1a34ea83fe343c18edc16b014db2e341e8f0bee47246d12db64bb27d430e07f321605b03a76cc1176fd2e62af65b9fc18a1a3094bc6750d40cf9a02039da643bf283b1fde7a11c9d751e317a4609e52a3131b74375c28fdc17605241cbba626818fc7334eb809c8271d22533622a2f083623269804501b091b4dc0d99e11e8198b20d454c84b955722b36423c59ce1902739359e708bebe5854c427e1bb6a498f29163c0d0c6ff86c5ec39569601041fd963713176c72fc514423c55b11ab8e4fd713e3a43bf128e985aed876a0cd2d441e91e4d6fda8c37a46e2eebb9209f6af54fd650a3b087119446587dc3730bf0dbeb67cbfc6f754b912f812ab9d8fa33ff09d57dedce4ad563aed95d90e0d9c0d6fea9c05fb2e9b8a4eddf3cd76ca845b280113f6bbea804728409047a5ac6041c37e09b6fa036801fd03a57417f2c5cf5a00b1abc59e9443bfea7b471e37a3869cde72dd63ff055134477049db5651d59811c1e476aaf394f1fafaea31f3e9231306185c11e114d43d84c3d5aa17672987e640cf9716909d7688ec095417c634cd64d5c2f51293cf445544ce78387a8c17c65552b2496c8be3a461e53aa94f093cccb9c1770ad763b9646a5925622556d24beb2a09dc8bcf45ed140134d54e1444a72a34f2ee3359939972b8bc11b50354759a2e5378cf497951d683d9f00ccaba3278350ffba456b6e1bd19d710e19ebf9801f539b9bb10e026c2cc52585048bb8425b506aad57b2ac9ed19602d356292b9144e11b3a4fec79d667f8b8ea7aa5d87e90e23ce251abc04e1f174177bc9467dd30f145ea3cf231ec2b524176e2b5506748646f3196bc174bf71bf1127f75c7a5ab1d12972856d87cfa60977e13726e66771bbf7522af53f58ede78e0f71f4aa208a3eb9fb012b16cf064adf8194dbd50dde33c4e19746fe635714a96cfd6e07dcc34cb857f7c0509df20c253bac8509de5b8f10e4368364b672ed32aa50e1578ef60e2b0f3caa93684d1dbedc2f7435bda31d221e2ddf4d6806d46963775650ceb2fa137d91c32771dd059969ee0d3fbfd1209404b37dab538ca27011aae3ea77f40532159a0a6399fb5f7dd3fcf12ffe982b588dbe4bbb731e25c6d9f50127e785592b6977034eacd7974c1704b77c166e08b0baa87ad14cad90ed6103cbcd0a2f6cfc3e9f13f383ffa4cf9718ddea9182f0151f23901e7ee1b8a847caf897a191f3f69a90d92ced9efefe21d623910b133b5962366480aca9b28ef99cf7e1e60dfc4e84841a618cee9e251c4fdd374e7a56f8ab4028b1d3d0eea4cbe1a161043e95351c1625fc11ba0e1d23ed05cc6eb053caa085268ee680abd1539e94a6264a2d54b39baaef6c00a496953711d543031a5c8f036b3bc1532edcf9b6ff627fe4a274bcc6ab09cfbb321d74d4cdae0d41f8d3233ac63f2bc7329dbc716e078a3f45cb446f99d02d73b30ef9023d8436cd756e1f929d5ae19548199f18c3df2661c8365f3eb83dd40c6fa19857d00f97fa8a89ab327ea7238bbd9fa006326d8d3693d4c2351d74742ed3ce028d435752b2ff182f479b9ae1fba5bc03a3e281ca45f1ccb83f4c433e003b1ce13ed17dff3b8583b1349812c4dd5bc62907c452fc5be95f0fe3fbf1f833b727f20808b3be33144bd434ed856ff5ddb561f87ea55645a9add8622c1158741e5f5610ad5428f299a92552722abf37b94e1c8f0cb7ff194f61833ae3a114ef584323101efbc1193f624a64981d22fbefa69e253c5e09bfdf3f5c0926f42a9c46978f2f423d3271f0556804fa1835a7731afc025f38497ca52fd5937538becc28e0d0ee54ea31e773fca3cff77590c9556cc0f31021dcf5134387",
+    "bits" : "1f614024",
+    "difficulty" : 39.64048143,
+    "chainwork" : "00000000000000000000000000000000000000000000000000000000001f3259",
+    "previousblockhash" : "000cddf688f612567afa146f06d058ebfcdcbf4bc7dec833db5865d2efe710e7",
+    "nextblockhash" : "000164df17a43f202888c2e1789f82b68bc02d18a481c70b3d62bd0e0349b6d7"
+}
+*/
+    }
+
+    function zcash_cli_z_gettxout(txid, n) {
+      var cmd = [zcashcli, "gettxout", txid, n];
+      var proc = cockpit.spawn(cmd, {
+        err: 'out'
+      });
+      proc.done(function(data) {
+        proc_zcash_cli_gettxout(txid, n, data);
+      });
+      proc.fail(proc_zcash_cli_fail);
+    }
+/*
+{
+    "bestblock" : "004a2fcc5ae0ece50cb65d3b0450a59ccd4c4ce31b5a6db891b0e067488b74d2",
+    "confirmations" : 1,
+    "value" : 0.36900000,
+    "scriptPubKey" : {
+        "asm" : "OP_HASH160 ef775f1f997f122a062fff1a2d7443abd1f9c642 OP_EQUAL",
+        "hex" : "a914ef775f1f997f122a062fff1a2d7443abd1f9c64287",
+        "reqSigs" : 1,
+        "type" : "scripthash",
+        "addresses" : [
+            "t2UNzUUx8mWBCRYPRezvA363EYXyEpHokyi"
+        ]
+    },
+    "version" : 1,
+    "coinbase" : true
+}
+*/
+    function gettransactionrowindex(txid) {
+      var indexes = zcash_transaction_table.rows().eq( 0 ).filter( function (rowIdx) {
+        return zcash_transaction_table.cell( rowIdx, 0 ).data() == txid ? true : false;
+      } );
+      return indexes[0];
+    }
+    function proc_zcash_cli_gettxout(txid, n, data) {
+      var jobj = JSON.parse("["+data+"]")[0];
+      if (jobj != null) {
+
+/*
+        var addresses = "";
+        $(jobj["scriptPubKey"]["addresses"]).each(function( index ) {
+          addresses += jobj["scriptPubKey"]["addresses"][index].toString() + ",";
+        });
+        addresses = addresses.substr(0, addresses.length - 1);        
+*/
+
+        var rowData = gettransactionrowindex(txid);
+        var amount = parseFloat(jobj["value"]);
+        if (!isEmpty(zcash_transaction_table.cell(rowData, 1).data()))
+            amount = amount + parseFloat(zcash_transaction_table.cell(rowData, 1).data());
+
+        zcash_transaction_table.cell(rowData, 1).data(round(amount).toString());
+        zcash_transaction_table.draw();
+
+        // total up all for this tx
+        zcash_cli_z_gettxout(txid, n+1);
+
+      }
     }
 
     //
@@ -836,7 +1023,7 @@
       var extrafee = round(parseFloat(zcash_protect_extra_fee.val().trim()));
       var maxamount = round(unspent_balances[zcash_protect_taddresses.val().trim()] - extrafee);
 
-      zcash_cli_protect(zcash_protect_taddresses.val().trim(), zcash_protect_zaddresses.val().trim(), maxamount.toFixed(8), "", $("#zcash-protect-cmd"));
+      zcash_cli_protect(zcash_protect_taddresses.val().trim(), zcash_protect_zaddresses.val().trim(), maxamount.toFixed(8));
     }
 
 
@@ -1095,11 +1282,9 @@
       proc.fail(proc_zcash_cli_fail);
     }
 
-    function zcash_cli_protect(taddr, zaddr, amount, memo, cmd_display) {
+    function zcash_cli_protect(taddr, zaddr, amount) {
 
       var ztx = "[{\"amount\": " + amount.toString() + ", \"address\": \"" + zaddr.toString() + "\"}]";
-      if (memo.length > 0)
-        ztx = "[{\"amount\": " + amount.toString() + ", \"memo\": \"" + utf8.encode(memo.toString().trim()).hexEncode() + "\", \"address\": \"" + zaddr.toString() + "\"}]";
 
       zcash_cli_op_running = true;
       var cmd = [zcashcli, "z_sendmany", taddr, ztx];
@@ -1183,6 +1368,9 @@
 
       zcash_monitor_opid = "";
       zcash_cli_op_running = false;
+
+      // update balances
+      zcash_cli_getinfo();
     }
 
     //
