@@ -27,7 +27,7 @@ Login to your linux server with your regular user account to get started.
 
     nproc and pidof commands are required to be functioning by this plugin.
 
-zcash-cli-cockpit plugin requires "zcash-cli" executable to be in your system path. It is possible to create a symbolic link to the "zcash-cli" executable compiled when following the <a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a>.
+zcash-cli-cockpit plugin requires "zcash-cli" executable to be in your system path. It is possible to create a symbolic link to the "zcash-cli" binary.
 
     cd zcash_git_checkout_dir
     sudo ln -sr ./src/zcash-cli /usr/bin/zcash-cli
