@@ -2,11 +2,11 @@
 <p style="float: left;">zcash-cli cockpit plugin web browser ui command line interface.</p>
 
 <a target="_blank" href="http://z.cash/">z.cash</a>: 
-<a target="_blank" href="https://github.com/zcash/zcash/blob/v1.0.0-beta2/doc/payment-api.md">Payment API</a> |
-<a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a> |
-<a target="_blank" href="https://github.com/zcash/zcash/wiki/Mining-Guide">Official Mining Guide</a> |
-<a target="_blank" href="https://z.cash/support/faq.html">Official FAQ</a> |
-<a target="_blank" href="https://forum.z.cash/">Official Forums</a>
+<a target="_blank" href="https://github.com/zcash/zcash/blob/v1.0.0/doc/payment-api.md">1.0 Payment API</a> |
+<a target="_blank" href="https://github.com/zcash/zcash/wiki/1.0-User-Guide">1.0 User Guide</a> |
+<a target="_blank" href="https://github.com/zcash/zcash/wiki/Mining-Guide">Mining Guide</a> |
+<a target="_blank" href="https://z.cash/support/faq.html">FAQ</a> |
+<a target="_blank" href="https://forum.z.cash/">Forums</a>
 
 ## install cockpit
 Fedora Server comes with Cockpit installed.
@@ -47,3 +47,7 @@ Upgrading? Since there is no official relase at this time, you must "pull" the l
 Open https://localhost:9090/ in your web browser and login to cockpit.
 Look for a new menu entry under "Tools" called "zcash-cli".
 
+# Donate to project
+
+ZEC -> t1bBgVQMfak2LZfCVVk88BGV3Cgu4crE3Ci  
+BTC -> 17v5jgu57wGKJnwkhVHvgYhbCVTFt9xXSN
