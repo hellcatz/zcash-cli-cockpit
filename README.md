@@ -10,10 +10,11 @@
 
 ## install cockpit
 Fedora Server comes with Cockpit installed.
-Access cockpit at the following url: https://localhost:9090/
 
 Installing Cockpit in Ubuntu 16.04  
 http://www.itzgeek.com/how-tos/linux/ubuntu-how-tos/install-cockpit-on-ubuntu-16-04.html
+
+Access cockpit at the following url: https://localhost:9090/
 
 ## install zcash
 
