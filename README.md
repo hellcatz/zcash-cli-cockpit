@@ -15,8 +15,11 @@ Access cockpit at the following url: https://localhost:9090/
 Installing Cockpit in Ubuntu 16.04
 http://www.itzgeek.com/how-tos/linux/ubuntu-how-tos/install-cockpit-on-ubuntu-16-04.html
 
-## get zcash from source
-Follow the <a target="_blank" href="https://github.com/zcash/zcash/wiki/Beta-Guide">Official Beta Guide</a> to downloaded and build zcash.
+## install zcash
+
+https://z.cash/download.html
+
+Follow the <a target="_blank" href="https://github.com/zcash/zcash/wiki/1.0-User-Guide">Install Guide</a> to build zcash from source.
 
 ## prepare your linux system
 Login to your linux server with your regular user account to get started.
