@@ -57,5 +57,5 @@ Look for a new menu entry under "Tools" called "zcash-cli".
 
 # donate to project
 
-ZEC -> t1bBgVQMfak2LZfCVVk88BGV3Cgu4crE3Ci  
+ZEC -> t1Qecf6zPTwWQ8eEhMHrux65gPQVYjKVDdq  
 BTC -> 17v5jgu57wGKJnwkhVHvgYhbCVTFt9xXSN
