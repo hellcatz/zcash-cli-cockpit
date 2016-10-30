@@ -1,4 +1,4 @@
-# zcash-cli-cockpit
+# zcash-cli-cockpit (rc4)
 <p style="float: left;">zcash-cli cockpit plugin - a browser based wallet ui for zcash.</p>
 
 <a target="_blank" href="http://z.cash/">z.cash</a> -> 
