@@ -2,7 +2,7 @@
 
 zcash-cli cockpit plugin - a browser based wallet ui for zcash.
 
-I am currently working towards renaming all the "testnet" references to "mainnet". For example, TAZ to ZEC.
+I am currently working towards renaming all the "testnet" references to "mainnet". For example, TAZ to ZEC. Along with some new features.
 
 <a target="_blank" href="http://z.cash/">z.cash</a> -> 
 <a target="_blank" href="https://github.com/zcash/zcash/blob/v1.0.0/doc/payment-api.md">1.0 Payment API</a> |
