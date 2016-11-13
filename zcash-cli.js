@@ -51,6 +51,7 @@ var znethps_output = $("#zcash-nethps");
 
 // balance tab
 var zcash_balance_taddresses_info = $("#zcash-balance-taddresses-info")
+var zcash_balance_taddresses_list = $("#zcash-balance-taddresses-list")
 var zcash_send_zaddresses_info = $("#zcash-balance-zaddresses-info");
 
 // blocks tab
@@ -245,6 +246,7 @@ function begin_application() {
         alert("Operation already in progress...");
         return;
     }
+    // initialize and start over
     zcash_isrunning = false;
     zcash_monitor_opid = "";
     zcash_sending_coins = false;
@@ -253,6 +255,7 @@ function begin_application() {
     shielded_balances = {};
     zcash_send_zaddresses_info.empty();
 
+    // check if zcashd is running
     zcash_cli_op_running = true;
     var cmd = ["pidof", "zcashd"];
     var proc = cockpit.spawn(cmd, {
@@ -264,19 +267,17 @@ function begin_application() {
 }
 
 function check_zcash_detection_result() {
+    zcash_cli_op_running = false;
     if (!zcash_isrunning) {
         alert("zcashd is not running!");
-        zcash_cli_op_running = false;
         return;
     }
-    // populate nproc select options
-    zcash_cli_op_running = true;
-    var cmd = ["nproc"];
-    var proc = cockpit.spawn(cmd, {
-        err: 'out'
-    });
-    proc.done(proc_zcash_mine_nproc);
-    proc.fail(proc_zcash_cli_fail);
+    zcash_cli_getinfo();
+    zcash_cli_getmininginfo();
+    zcash_cli_getaddressesbyaccount();
+    zcash_cli_listunspent();
+    zcash_cli_listtransactions();
+    zcash_cli_list_zaddr();
 }
 
 function do_zcashd_detection(data) {
@@ -290,31 +291,6 @@ function do_zcashd_detection(data) {
             $("#zcash-pid").append("(zcashd pid: " + data.trim() + ")");
         }
     }
-}
-
-function proc_zcash_mine_nproc(data) {
-    zcash_mine_nproc.empty();
-    zcash_mine_nproc.append($("<option/>", {
-        value: 1,
-        text: 1
-    }));
-    for (i = 1; i < parseInt(data); i++) {
-        zcash_mine_nproc.append($("<option/>", {
-            value: i + 1,
-            text: i + 1
-        }));
-    }
-    zcash_mine_nproc.val(parseInt(data));
-
-    zcash_cli_op_running = false;
-
-    zcash_cli_getinfo();
-    zcash_cli_getmininginfo();
-
-    zcash_cli_listunspent();
-    zcash_cli_listtransactions();
-
-    zcash_cli_list_zaddr();
 }
 
 //
@@ -573,20 +549,24 @@ function proc_zcash_cli_getnettotals(data) {
     schedule_zcash_cli_getinfo_refresh();
 }
 
-function zcash_cli_getaddressesbyaccount() {
-    var cmd = [zcashcli, "getaddressesbyaccount", ""];
-    var proc = cockpit.spawn(cmd, {
-        err: 'out'
-    });
-    proc.done(proc_zcash_cli_z_gettotalbalance_unconfirmed);
-    proc.fail(proc_zcash_cli_fail);
-}
-
 function schedule_zcash_cli_getinfo_refresh(method) {
     if (zcash_getinfo_timeout != 0) {
         clearTimeout(zcash_getinfo_timeout);
     }
     zcash_getinfo_timeout = setTimeout(zcash_cli_getinfo, zcash_getinfo_rate);
+}
+
+function zcash_cli_getaddressesbyaccount() {
+    var cmd = [zcashcli, "getaddressesbyaccount", ""];
+    var proc = cockpit.spawn(cmd);
+    proc.done(function (data){
+        var jobj = JSON.parse(data);
+        zcash_balance_taddresses_list.empty();
+        $.each(jobj, function (i) {
+            zcash_balance_taddresses_list.append(jobj[i]+"<br />");
+        });
+    });
+    proc.fail(proc_zcash_cli_fail);
 }
 
 //
@@ -662,7 +642,7 @@ function zcash_cli_listunspent() {
     zcash_shield_taddresses_info.empty();
     zcash_shield_taddresses_info.append("<small><i>No coins available to shield.</i></small>");
     zcash_balance_taddresses_info.empty();
-    zcash_balance_taddresses_info.append("<small><i>No coins available to shield.</i></small>");
+    zcash_balance_taddresses_info.append("<small><i>No coins available.</i></small>");
 }
 
 function proc_zcash_cli_listunspent(data) {
@@ -802,6 +782,15 @@ function proc_zcash_cli_zaddr(data) {
         // lookup balance for zaddr
         zcash_cli_getbalance_for_zaddr(name);
     }
+
+    for (var name in taddr_balances) {
+        var shortname = name.substring(0, 7) + "..." + name.substring((name.toString().length - 7)).trim();
+        // populate send tab select options
+        zcash_send_from.append($("<option/>", {
+            value: name,
+            text: shortname
+        }));
+    }
 }
 
 function zcash_cli_getbalance_for_zaddr(zaddr) {
@@ -820,6 +809,7 @@ function zcash_cli_getbalance_for_zaddr(zaddr) {
 
 function zcash_send_add_more(e) {
 
+    // prevent clicking on the link itself
     e.preventDefault();
 
     if (zcash_send_to_count >= zcash_send_to_max) {
@@ -849,7 +839,10 @@ function zcash_onClickSend(e) {
         alert("Operation already in progress...");
         return;
     }
-    if (shielded_balances[zcash_send_from.val()] == null) {
+
+    var isZADDR = (zcash_send_from.val().toString().match("^z") != null);
+    var balances = isZADDR ? shielded_balances : taddr_balances;
+    if (balances[zcash_send_from.val()] == null) {
         alert("Invalid from address.");
         return;
     }
@@ -859,7 +852,7 @@ function zcash_onClickSend(e) {
     zcash_send_memo = $(".zcash-send-memo");
 
     var extrafee = round(parseFloat(zcash_send_extra_fee.val()));
-    var maxamount = round(shielded_balances[zcash_send_from.val()] - extrafee);
+    var maxamount = round(balances[zcash_send_from.val()] - extrafee);
     if (maxamount <= 0) {
         alert("Insufficient funds for transaction.");
         return;
@@ -882,6 +875,20 @@ function zcash_onClickSend(e) {
     var confirmHtml = "Are you sure you want to send?\n\n";
     var total_amount = 0.0;
     var count = $(to_addrs).size();
+    var addrAvailable = false;
+    for (i = 0; i < count; i++) {
+        // ignore empty to_addrs
+        if (isEmpty(to_addrs[i])) {
+            continue;
+        }
+        addrAvailable = true;
+    }
+
+    if (!addrAvailable) {
+        alert("No address entered.");
+        return;
+    }
+
     // early sanity checks and build confirmation html
     for (i = 0; i < count; i++) {
         // ignore empty to_addrs
@@ -908,6 +915,12 @@ function zcash_onClickSend(e) {
         }
         total_amount += amount;
     }
+
+    if (total_amount == null || total_amount == NaN || total_amount <= 0) {
+        alert("Invalid amount entered.");
+        return;
+    }
+
     if (total_amount > maxamount) {
         alert("Insufficient funds for transaction.\nAvailable amount is " + maxamount + " ZEC");
         return;
