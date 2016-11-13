@@ -1,7 +1,4 @@
-
-*NOTE (10/29/2016), I am currently working towards renaming all the "testnet" references to "mainnet". For example, TAZ to ZEC. Along with some new features.
-
-# zcash-cli-cockpit (rc4)
+# zcash-cli-cockpit
 
 zcash-cli cockpit plugin - a browser based wallet ui for zcash.
 
