@@ -2,13 +2,6 @@
 
 zcash-cli cockpit plugin - a browser based wallet ui for zcash.
 
-<a target="_blank" href="http://z.cash/">z.cash</a> -> 
-<a target="_blank" href="https://github.com/zcash/zcash/blob/master/doc/payment-api.md">1.0 Payment API</a> |
-<a target="_blank" href="https://github.com/zcash/zcash/wiki/1.0-User-Guide">1.0 User Guide</a> |
-<a target="_blank" href="https://github.com/zcash/zcash/wiki/Mining-Guide">Mining Guide</a> |
-<a target="_blank" href="https://z.cash/support/faq.html">FAQ</a> |
-<a target="_blank" href="https://forum.z.cash/">Forums</a>
-
 ## install cockpit
 Fedora Server comes with Cockpit installed.
 
@@ -56,3 +49,11 @@ Look for a new menu entry under "Tools" called "zcash-cli".
 
 ZEC -> t1Qecf6zPTwWQ8eEhMHrux65gPQVYjKVDdq  
 BTC -> 17v5jgu57wGKJnwkhVHvgYhbCVTFt9xXSN
+
+
+<a target="_blank" href="http://z.cash/">z.cash</a> -> 
+<a target="_blank" href="https://github.com/zcash/zcash/blob/master/doc/payment-api.md">1.0 Payment API</a> |
+<a target="_blank" href="https://github.com/zcash/zcash/wiki/1.0-User-Guide">1.0 User Guide</a> |
+<a target="_blank" href="https://github.com/zcash/zcash/wiki/Mining-Guide">Mining Guide</a> |
+<a target="_blank" href="https://z.cash/support/faq.html">FAQ</a> |
+<a target="_blank" href="https://forum.z.cash/">Forums</a>
