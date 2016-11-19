@@ -3,7 +3,7 @@
 zcash-cli cockpit plugin - a browser based wallet ui for zcash.
 
 <a target="_blank" href="http://z.cash/">z.cash</a> -> 
-<a target="_blank" href="https://github.com/zcash/zcash/blob/v1.0.0/doc/payment-api.md">1.0 Payment API</a> |
+<a target="_blank" href="https://github.com/zcash/zcash/blob/master/doc/payment-api.md">1.0 Payment API</a> |
 <a target="_blank" href="https://github.com/zcash/zcash/wiki/1.0-User-Guide">1.0 User Guide</a> |
 <a target="_blank" href="https://github.com/zcash/zcash/wiki/Mining-Guide">Mining Guide</a> |
 <a target="_blank" href="https://z.cash/support/faq.html">FAQ</a> |
