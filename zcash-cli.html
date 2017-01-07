@@ -8,6 +8,7 @@
     <script src="../base1/jquery.js"></script>
     <script src="../base1/cockpit.js"></script>
     <script src="jquery.dataTables.min.js"></script>
+	<script src="date.format.js"></script>
     <style>
         ul.tab {
             list-style-type: none;
@@ -145,27 +146,26 @@
 
     <ul class="tab">
         <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabBalance')">Balance</a></li>
-        <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabBlocks')">Blockchain</a></li>
+        <!-- <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabBlocks')">Blockchain</a></li> -->
         <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabTransactions')">Transactions</a></li>
         <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabShield')">Shield</a></li>
         <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabSend')">Send</a></li>
         <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabConsole')">Console</a></li>
-        <li><a href="#tabs" class="tablinks" onclick="showTab(event, 'zcashTabMining')">Mining</a></li>
     </ul>
 
     <div id="zcashTabBalance" class="tabcontent">
         <p>
             <label>Shielded Coins</label> <!--<i>(Double Click on z-addr to view private transactions)</i> --> <br/>
-            <small>You may receive ZEC by giving out one of the addresses below.</small> <br />
+            <small>You may receive ZEC privately by giving out one of the addresses below.</small> <br />
             <span id="zcash-balance-zaddresses-info">...</span>
         </p>
         <p>
-            <label>Unshielded Coins</label> <!--<i>(Double Click on z-addr to view private transactions)</i> --> <br/>
+            <label>Public Coins</label> <br/>
             <span id="zcash-balance-taddresses-info">...</span>
         </p>
         <p>
             <label>Public Transparent Addresses</label> <!--<i>(Double Click on z-addr to view private transactions)</i> --> <br />
-            <small>You may receive ZEC by giving out one of the addresses below.</small> <br />
+            <small>You may receive ZEC publicly by giving out one of the addresses below.</small> <br />
             <span id="zcash-balance-taddresses-list">...</span>
         </p>
     </div>
@@ -176,20 +176,20 @@
     </div>
 
     <div id="zcashTabTransactions" class="tabcontent">
-        <p>Note, transactions sent from private z-addr are not shown. Currently, there is no way to list recent z-addr transactions using the zcash-cli.</p>
+        <p>Double Click transaction to view in block explorer. Note, transactions sent from private z-addr are not shown.</p>
         <table id="zcash-table-transactions" class="display" width="100%"></table>
     </div>
 
     <div id="zcashTabShield" class="tabcontent">
 
-        <p>Your mined coins are currently stored in a t-addr. Let's make them private by sending them to a z-addr.</p>
+        <p>Your mined coins are currently stored in a public t-addr. Make them private by sending the entire balance to a z-addr.</p>
 
         <table class="cockpit-form-table">
             <tr>
                 <td valign="top">
                     <div class="roundedbox">
                         <label for="zcash-shield-taddresses">From Address</label><br/>
-                        <select id="zcash-shield-taddresses" style="margin-bottom: 6px;">
+                        <select id="zcash-shield-taddresses" style="margin-bottom: 6px;" onchange="if (this.selectedIndex >= 0) update_shield_amount();">
                             <option value="tn1">taddr</option>
                         </select>
                         <br/>
@@ -225,8 +225,8 @@
 
     <div id="zcashTabSend" class="tabcontent">
 
-        <p>Send your private z-addr coins to the specified t-addr or z-addr. Note, memos are not supported when sending
-            to a t-addr.</p>
+        <p>Send your private z-addr coins to the specified t-addr or z-addr. Note, memos are only supported when sending
+            to a z-addr.</p>
 
         <table class="cockpit-form-table" width="100%">
             <tr>
@@ -295,29 +295,6 @@
             </tr>
         </table>
 
-    </div>
-
-    <div id="zcashTabMining" class="tabcontent">
-
-        <pre id="zcash-mine-details">zcashd bug? applying settings here causes zcashd to crash after a short period.</pre>
-
-        <!-- TODO, zcashd has a bug that causes it to crash, do not allow users to issue setgenerate
-        <table class="cockpit-form-table">
-            <tr>
-                <td>
-                    generate
-                    <select id="zcash-mine-generate">
-                        <option value="true">true</option>
-                        <option value="false">false</option>
-                    </select> genproclimit
-                    <select id="zcash-mine-nproc">
-                        <option value="1">1</option>
-                    </select>
-                    <button class="btn btn-default btn-primary" id="zcash-mine-start">Apply</button>
-                </td>
-            </tr>
-        </table>
-        -->
     </div>
 
     <div id="zcashTabWait" class="tabcontent">

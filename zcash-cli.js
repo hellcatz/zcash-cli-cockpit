@@ -14,7 +14,12 @@ Copyright (c) 2016 github.com/hellcatz
 // Config Variables
 //
 var zcashcli = "zcash-cli";
-var zcash_getinfo_rate = 30000;
+var zcash_getinfo_rate = 60000;
+
+var explorer_transactions_url = "https://explorer.zcha.in/transactions/";
+
+
+
 
 //
 // Global Variables
@@ -77,21 +82,25 @@ var zcash_transaction_table = $("#zcash-table-transactions").DataTable({
     lengthChange: false,
     paging: false,
     info: false,
-    order: [[3, "desc"]],
+    order: [[6, "desc"]],
     columns: [
         {title: "TXID"},
         {title: "Type"},
         {title: "Amount"},
-        {title: "Date"},
+        {title: "Date", },
         {title: "Address"},
-        {title: "Confirms"}
+        {title: "Confirms"},
+		{title: "timestamp", },
     ],
     columnDefs: [
-        {
-            "targets": [0],
-            "visible": false
-        }
+        { targets: [0], visible: false },
+		{ targets: [6], visible: false }
     ]
+
+});
+
+$("#zcash-table-transactions tbody").on( 'dblclick', 'tr', function () {
+	window.open(explorer_transactions_url + zcash_transaction_table.row( this ).data()[0], "_blank");
 });
 
 // wait z_sendmany opid to complete status
@@ -119,12 +128,6 @@ var zcash_send_memo = $(".zcash-send-memo");
 var zcash_sending_coins = false;
 var zcash_send_to_wrapper = $("#zcash-send-to-wrapper");
 
-// mining tab
-var zcash_mine_details = $("#zcash-mine-details");
-var zcash_mine_generate = $("#zcash-mine-generate");
-var zcash_mine_nproc = $("#zcash-mine-nproc");
-
-
 // dialog experiments
 var zcash_dialog_modal = document.getElementById('zcash-dialog-model');
 var zcash_dialog_title = $("#zcash-dialog-title");
@@ -141,7 +144,6 @@ zcash_dialog_closebtn.onclick = function () {
 $("#zcash-refresh").on("click", begin_application);
 $("#zcash-send").on("click", zcash_onClickSend);
 $("#zcash-shield").on("click", zcash_onClickShield);
-$("#zcash-mine-start").on("click", zcash_mine_start);
 $("#zcash-cli-input-run").on("click", zcash_cli_input_run);
 $("#zcash-send-add").on("click", zcash_send_add_more);
 
@@ -570,28 +572,6 @@ function zcash_cli_getaddressesbyaccount() {
 }
 
 //
-// 	Mining Tab
-//
-
-//
-// 	zcash-cli setgenerate
-//
-function zcash_mine_start() {
-    var cmd = [zcashcli, "setgenerate", zcash_mine_generate.val(), zcash_mine_nproc.val()];
-    var proc = cockpit.spawn(cmd, {
-        err: 'out'
-    });
-    proc.done(proc_zcash_mine_start_done);
-    proc.fail(proc_zcash_cli_fail);
-    zcash_output.empty();
-    zcash_output.append(document.createTextNode(cmd.join(" ")));
-}
-
-function proc_zcash_mine_start_done() {
-    setTimeout(zcash_cli_getmininginfo, 1000);
-}
-
-//
 // 	zcash-cli getmininginfo
 //
 function zcash_cli_getmininginfo() {
@@ -608,11 +588,6 @@ function proc_zcash_cli_getmininginfo(data) {
     var jobj = JSON.parse(data);
 
     var nproc = parseInt(jobj["genproclimit"]);
-    //zcash_mine_generate.val((jobj["generate"] == true ? "true" : "false"));
-    //zcash_mine_nproc.val(nproc);
-
-    zcash_mine_details.empty();
-    zcash_mine_details.append(data);
 
     znethps_output.empty();
     znethps_output.append(jobj["networkhashps"]);
@@ -644,6 +619,8 @@ function zcash_cli_listunspent() {
     zcash_balance_taddresses_info.empty();
     zcash_balance_taddresses_info.append("<small><i>No coins available.</i></small>");
 }
+
+
 
 function proc_zcash_cli_listunspent(data) {
     var jobj = JSON.parse(data);
@@ -680,6 +657,12 @@ function proc_zcash_cli_listunspent(data) {
     }
 }
 
+function update_shield_amount() {
+	if (zcash_shield_taddresses.val() != null && taddr_balances[zcash_shield_taddresses.val()] != null) {
+		zcash_shield_amount.val(round(taddr_balances[zcash_shield_taddresses.val()] - zcash_shield_extra_fee.val()));
+	}
+}
+
 function zcash_onClickShield(e) {
     if (zcash_cli_op_running == true) {
         alert("Operation already in progress...");
@@ -691,27 +674,38 @@ function zcash_onClickShield(e) {
         return;
     }
     var extrafee = round(parseFloat(zcash_shield_extra_fee.val().trim()));
+	if (extrafee < 0.0001) {
+		alert("Minimum extra fee is 0.0001");
+        return;
+	}
     var maxamount = round(taddr_balances[zcash_shield_taddresses.val().trim()] - extrafee);
-    var amount = round(zcash_shield_amount.val().trim());
+    var amount =  round(zcash_shield_amount.val().trim());
     if (amount == null || amount == NaN || amount <= 0) {
         alert("Invalid amount entered.");
+        return;
+    }
+	if (extrafee > amount) {
+        alert("Extra Fee can not be greater than amount!");
         return;
     }
     if (amount > maxamount) {
         alert("Insufficient funds for transaction.\nAvailable amount is " + maxamount + " ZEC");
         return;
     }
-
-    zcash_cli_shield(zcash_shield_taddresses.val().trim(), zcash_shield_zaddresses.val().trim(), amount.toFixed(8));
+	
+    zcash_cli_shield(zcash_shield_taddresses.val().trim(), zcash_shield_zaddresses.val().trim(), amount.toFixed(8), extrafee);
 }
 
-function zcash_cli_shield(taddr, zaddr, amount) {
+function zcash_cli_shield(taddr, zaddr, amount, fee) {
 
     var ztx = "[{\"amount\": " + amount.toString() + ", \"address\": \"" + zaddr.toString() + "\"}]";
 
     zcash_cli_op_running = true;
     var cmd = [zcashcli, "z_sendmany", taddr, ztx];
-
+    if (fee > 0.0001) {
+		cmd = [zcashcli, "z_sendmany", taddr, ztx, "1", fee.toFixed(8)];
+	}
+	
     zcash_output.empty();
     zcash_output.append(cmd.join(" "));
 
@@ -852,12 +846,16 @@ function zcash_onClickSend(e) {
     zcash_send_memo = $(".zcash-send-memo");
 
     var extrafee = round(parseFloat(zcash_send_extra_fee.val()));
+	if (extrafee < 0.0001) {
+		alert("Minimum extra fee is 0.0001");
+        return;
+	}
     var maxamount = round(balances[zcash_send_from.val()] - extrafee);
     if (maxamount <= 0) {
         alert("Insufficient funds for transaction.");
         return;
     }
-
+	
     var to_addrs = [];
     var amounts = [];
     var memos = [];
@@ -925,7 +923,12 @@ function zcash_onClickSend(e) {
         alert("Insufficient funds for transaction.\nAvailable amount is " + maxamount + " ZEC");
         return;
     }
-
+	
+    if (extrafee > total_amount) {
+        alert("Extra Fee can not be greater than amount!");
+        return;
+    }
+	
     confirmHtml += "Extra Fee: " + extrafee.toString() + " ZEC\n";
     confirmHtml += "Total Cost: " + round(total_amount + extrafee).toString() + " ZEC\n\n";
 
@@ -936,7 +939,7 @@ function zcash_onClickSend(e) {
 
     var doTrx = confirm(confirmHtml);
     if (doTrx == true) {
-        zcash_cli_sendmany(zcash_send_from.val().trim(), to_addrs, amounts, memos, $("#zcash-wait"));
+        zcash_cli_sendmany(zcash_send_from.val().trim(), to_addrs, amounts, memos, extrafee);
     }
 }
 
@@ -971,7 +974,7 @@ function zcash_wait_operation_fail(msg) {
     showTab(null, "zcashTabWait");
 }
 
-function zcash_cli_sendmany(from_addr, to_addrs, amounts, memos) {
+function zcash_cli_sendmany(from_addr, to_addrs, amounts, memos, fee) {
 
     // TODO, more sanity checks
     if (to_addrs.length != amounts.length) {
@@ -1004,7 +1007,10 @@ function zcash_cli_sendmany(from_addr, to_addrs, amounts, memos) {
 
     zcash_cli_op_running = true;
     var cmd = [zcashcli, "z_sendmany", from_addr, ztx];
-
+    if (fee > 0.0001) {
+		cmd = [zcashcli, "z_sendmany", from_addr, ztx, "1", fee.toFixed(8)];
+	}
+	
     zcash_output.empty();
     zcash_output.append(cmd.join(" "));
 
@@ -1106,18 +1112,27 @@ function zcash_cli_listtransactions() {
 function proc_zcash_cli_listtransactions(data) {
     var jobj = JSON.parse(data);
 
+	var today = new Date();
+	
     // gather up spendable balances
-    $.each(jobj.reverse(), function (i) {
+    $.each(jobj, function (i) {
 
         var txid = jobj[i]["txid"];
         var type = jobj[i]["category"];
         var amount = parseFloat(jobj[i]["amount"]);
         //var date = new Date(parseInt(jobj[i]["time"]) * 1000);
-        var date = parseInt(jobj[i]["time"]);
+        var unix_epoch = parseInt(jobj[i]["time"]);
         var address = jobj[i]["address"];
         if (isEmpty(address))
             address = "* private z-addr *";
-
+		
+		var now = Date.now() / 1000;
+		var d = new Date(unix_epoch * 1000);
+		var diffSec = (now - unix_epoch); 
+        var date = dateFormat(d, "h:MM:ss TT");
+		if (diffSec > 86400)
+			date = dateFormat(d, "m/dd/yy");
+		
         var confs = jobj[i]["confirmations"];
 
         var rowData = gettransactionrowindex(txid);
@@ -1125,11 +1140,12 @@ function proc_zcash_cli_listtransactions(data) {
             zcash_transaction_table.cell(rowData, 0).data(txid.toString());
             zcash_transaction_table.cell(rowData, 1).data(type.toString());
             zcash_transaction_table.cell(rowData, 2).data(round(amount).toString());
-            zcash_transaction_table.cell(rowData, 3).data(date.toString());
+            zcash_transaction_table.cell(rowData, 3).data(date);
             zcash_transaction_table.cell(rowData, 4).data(address.toString());
             zcash_transaction_table.cell(rowData, 5).data(confs.toString());
+			zcash_transaction_table.cell(rowData, 6).data(unix_epoch);
         } else {
-            zcash_transaction_table.row.add([txid, type, round(amount).toString(), date, address, confs]);
+            zcash_transaction_table.row.add([txid, type, round(amount).toString(), date, address, confs, unix_epoch]);
         }
 
         // TODO, style the row color
