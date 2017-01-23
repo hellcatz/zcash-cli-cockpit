@@ -47,8 +47,7 @@ Look for a new menu entry under "Tools" called "zcash-cli".
 
 # donate to project
 
-ZEC -> t1Qecf6zPTwWQ8eEhMHrux65gPQVYjKVDdq  
-BTC -> 17v5jgu57wGKJnwkhVHvgYhbCVTFt9xXSN
+ZEC -> t1Qecf6zPTwWQ8eEhMHrux65gPQVYjKVDdq
 
 
 <a target="_blank" href="http://z.cash/">z.cash</a> -> 
