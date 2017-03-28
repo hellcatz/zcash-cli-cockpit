@@ -1,6 +1,6 @@
 # zcash-cli-cockpit
 
-zcash-cli cockpit plugin - a browser based wallet ui for zcash.
+zcash-cli cockpit plugin - a browser based wallet ui for zcash based coins
 
 ## install cockpit
 Fedora Server comes with Cockpit installed.
@@ -45,10 +45,15 @@ Upgrading? Since there is no official relase at this time, you must "pull" the l
 Open https://localhost:9090/ in your web browser and login to cockpit.
 Look for a new menu entry under "Tools" called "zcash-cli".
 
-# donate to project
+# donate to project author hellcatz
 
-ZEC -> t1Qecf6zPTwWQ8eEhMHrux65gPQVYjKVDdq
+    ZEC -> t1Qecf6zPTwWQ8eEhMHrux65gPQVYjKVDdq
 
+    ZCL -> t1f1xRt73TWgVWJQEFAW6DLwKtwmQvFahrN
+
+    KMD -> R9xUuaZcodTmeKFrKdNR25gKgoBE47Jt88
+
+    BTC -> 17v5jgu57wGKJnwkhVHvgYhbCVTFt9xXSN
 
 <a target="_blank" href="http://z.cash/">z.cash</a> -> 
 <a target="_blank" href="https://github.com/zcash/zcash/blob/master/doc/payment-api.md">1.0 Payment API</a> |
