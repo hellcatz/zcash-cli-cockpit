@@ -36,7 +36,6 @@ Change directory and clone the git repository.
     cd ~/.local/share/cockpit/
     git clone https://github.com/hellcatz/zcash-cli-cockpit
     
-
 Upgrading? Since there is no official relase at this time, you must "pull" the lastest from "master" using git.
 
     cd ~/.local/share/cockpit/zcash-cli-cockpit
@@ -44,6 +43,18 @@ Upgrading? Since there is no official relase at this time, you must "pull" the l
 
 Open https://localhost:9090/ in your web browser and login to cockpit.
 Look for a new menu entry under "Tools" called "zcash-cli".
+
+# Multi-Coin Support
+
+Change name of menu label for alternate coin.
+
+    https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/manifest.json#L6
+    
+Change variables in zcash-cli.js
+
+    https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/zcash-cli.js#L16-L20
+
+Make sure to name your daemons and cli binaries unique!
 
 # donate to project author hellcatz
 
