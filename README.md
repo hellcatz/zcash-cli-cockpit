@@ -54,7 +54,12 @@ Change variables in zcash-cli.js
 
     https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/zcash-cli.js#L16-L20
 
-Make sure to name your daemons and cli binaries unique!
+Make sure to name your daemons and cli binaries unique! Example alternate coins below...
+
+    sudo ln -sr ./src/komodo-cli /usr/bin/komodo-cli
+    sudo ln -sr ./src/zcash-cli /usr/bin/zclassic-cli
+    sudo ln -sr ./src/zen-cli /usr/bin/zen-cli
+    sudo ln -sr ./src/zcash-cli /usr/bin/zcash-cli
 
 # donate to project author hellcatz
 
