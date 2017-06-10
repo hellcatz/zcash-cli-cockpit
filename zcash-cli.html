@@ -121,9 +121,9 @@
             <td style="min-width: 280px;">
 
                 <p style="float: left; padding-left: 6px; padding-right: 12px; padding-top: 4px;">
-                    Balance: <b><span id="zcash-balance">...</span></b> ZEC<br/> Shielded: <b><span
-                        id="zcash-pbalance">...</span></b> ZEC<br/> Unshielded: <b><span id="zcash-tbalance">...</span></b>
-                    ZEC<br/>
+                    Balance: <b><span id="zcash-balance">...</span></b> <span class="csymbol">ZCL</span><br/> Shielded: <b><span
+                        id="zcash-pbalance">...</span></b> <span class="csymbol">ZEC</span><br/> Unshielded: <b><span id="zcash-tbalance">...</span></b>
+                    <span class="csymbol">ZEC</span><br/>
                 </p>
                 <p style="float: left; padding-top: 4px; padding-right: 12px;">
                     Block Height: <b><span id="zcash-block">...</span></b><br/> Difficulty: <b><span
@@ -156,7 +156,7 @@
     <div id="zcashTabBalance" class="tabcontent">
         <p>
             <label>Shielded Coins</label> <!--<i>(Double Click on z-addr to view private transactions)</i> --> <br/>
-            <small>You may receive ZEC privately by giving out one of the addresses below.</small> <br />
+            <small>You may receive <span class="csymbol">ZEC</span> privately by giving out one of the addresses below.</small> <br />
             <span id="zcash-balance-zaddresses-info">...</span>
         </p>
         <p>
@@ -165,7 +165,7 @@
         </p>
         <p>
             <label>Public Transparent Addresses</label> <!--<i>(Double Click on z-addr to view private transactions)</i> --> <br />
-            <small>You may receive ZEC publicly by giving out one of the addresses below.</small> <br />
+            <small>You may receive <span class="csymbol">ZEC</span> publicly by giving out one of the addresses below.</small> <br />
             <span id="zcash-balance-taddresses-list">...</span>
         </p>
     </div>
@@ -210,7 +210,7 @@
                     </div>
 					
 					<div class="roundedbox" style="margin-top: 8px; margin-bottom: 4px;">
-					  <label for="zcash-shield-all-amount">Shield All w/Balance <br /> 9.9 to 10.1 ZEC</label><br/>
+					  <label for="zcash-shield-all-amount">Shield All w/Balance <br /> 9.9 to 10.1 <span class="csymbol">ZEC</span></label><br/>
                       <div style="margin-top: 8px; margin-bottom: 4px;">
 					    <button class="btn btn-default btn-primary" id="zcash-shield-all">Shield All</button>
 					  </div>
@@ -332,7 +332,7 @@
 </div>
 <script src="zcash-cli.js"></script>
 <script>
-// TODO, update symbols from ZEC to ZEN/KMD/etc...
+$(".csymbol").text(symbol);
 </script>
 </body>
 
