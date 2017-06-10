@@ -198,7 +198,7 @@
                         <select id="zcash-shield-zaddresses" style="margin-bottom: 6px;">
                             <option value="tn1">zaddr</option>
                         </select><br/>
-                        <label for="zcash-shield-extrafee">Extra Fee</label><br/>
+                        <label for="zcash-shield-extrafee">Tx Fee</label><br/>
                         <input id="zcash-shield-extrafee" type="text" value="0.0001"/>
                         <br/>
                         <label for="zcash-shield-amount">Amount</label><br/>
@@ -208,6 +208,13 @@
                             <button class="btn btn-default btn-primary" id="zcash-shield">Shield</button>
                         </div>
                     </div>
+					
+					<div class="roundedbox" style="margin-top: 8px; margin-bottom: 4px;">
+					  <label for="zcash-shield-all-amount">Shield All w/Balance <br /> 9.9 to 10.1 ZEC</label><br/>
+                      <div style="margin-top: 8px; margin-bottom: 4px;">
+					    <button class="btn btn-default btn-primary" id="zcash-shield-all">Shield All</button>
+					  </div>
+					</div>
                 </td>
                 <td valign="top" style="padding-left: 8px;">
 
@@ -241,7 +248,7 @@
                         <select id="zcash-send-from">
                             <option value="tn1">addr</option>
                         </select><br/>
-                        <label>Extra Fee</label> <br/>
+                        <label>Tx Fee</label> <br/>
                         <input type="text" id="zcash-send-extrafee" value="0.0001"/>
                     </div>
 
@@ -324,6 +331,9 @@
     <p></p>
 </div>
 <script src="zcash-cli.js"></script>
+<script>
+// TODO, update symbols from ZEC to ZEN/KMD/etc...
+</script>
 </body>
 
 </html>
