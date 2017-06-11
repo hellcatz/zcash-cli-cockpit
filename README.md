@@ -77,11 +77,11 @@ Look for a new menu entry under "Tools" called "zcash-cli".
 
 Change name of menu label for alternate coin.
 
-    https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/manifest.json#L6
+https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/manifest.json#L6
     
 Change variables in zcash-cli.js
 
-    https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/zcash-cli.js#L16-L20
+https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/zcash-cli.js#L17-L21
 
 Make sure to name your daemons and cli binaries unique! Example alternate coins below...
 
