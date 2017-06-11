@@ -3,6 +3,9 @@
 zcash-cli cockpit plugin - a browser based wallet ui for zcash based coins
 
 ## install cockpit
+
+Cockpit is a very useful web interface for server admins.
+
 Installing Cockpit in Ubuntu 16.04  
 http://www.itzgeek.com/how-tos/linux/ubuntu-how-tos/install-cockpit-on-ubuntu-16-04.html
 
