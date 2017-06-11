@@ -36,7 +36,7 @@ Make sure you create a symlink to your cli binary. See examples below.
     
 ### zencash
 
-    git clone ???
+    git clone https://github.com/ZencashOfficial/zen
     cd zen
     git checkout master
     ./zcutil/build.sh -j2
