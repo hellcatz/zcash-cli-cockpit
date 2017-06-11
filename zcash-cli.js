@@ -1027,7 +1027,7 @@ function zcash_wait_operation_start(title) {
     zcash_wait.empty();
     zcash_wait_status.empty();
     zcash_wait.css("color", "");
-    zcash_wait.append("<img id=\"zcash-wait-image\" src=\"zcash-logo-spin.gif\" alt=\"please wait\" align=\"left\" style=\"padding-right: 12px;\" /> <label>" + title.toString() + "</label> <br />");
+    zcash_wait.append("<img class=\"zcash-wait-image\" id=\"zcash-wait-image\" src=\"logo-"+symbol+".jpg\" alt=\"please wait\" align=\"left\" style=\"padding-right: 12px; animation:spin 4s linear infinite;\" /> <label>" + title.toString() + "</label> <br />");
     showTab(null, "zcashTabWait");
 }
 function zcash_wait_operation_progress(msg) {
