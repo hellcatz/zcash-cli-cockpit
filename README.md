@@ -3,30 +3,56 @@
 zcash-cli cockpit plugin - a browser based wallet ui for zcash based coins
 
 ## install cockpit
-Fedora Server comes with Cockpit installed.
-
 Installing Cockpit in Ubuntu 16.04  
 http://www.itzgeek.com/how-tos/linux/ubuntu-how-tos/install-cockpit-on-ubuntu-16-04.html
 
+Fedora Server comes with Cockpit installed.
+
 Access cockpit at the following url: https://localhost:9090/
 
-## install zcash
+## building coin wallet daemon
 
-https://z.cash/download.html
+This cockpit plugin requires the zcash-cli binary to be in the executable path.
 
-Follow the <a target="_blank" href="https://github.com/zcash/zcash/wiki/1.0-User-Guide">Install Guide</a> to build zcash from source.
+Make sure you create a symlink to your cli binary. See examples below.
 
-## prepare your linux system
-Login to your linux server with your regular user account to get started.
+### zcash
 
-    nproc and pidof commands are required to be functioning by this plugin.
-
-zcash-cli-cockpit plugin requires "zcash-cli" executable to be in your system path. It is possible to create a symbolic link to the "zcash-cli" binary.
-
-    cd zcash_git_checkout_dir
+    git clone https://github.com/zcash/zcash
+    cd zcash
+    git checkout master
+    ./zcutil/build.sh -j2
+    
     sudo ln -sr ./src/zcash-cli /usr/bin/zcash-cli
 
-## installing zcash-cli-cockpit plugin
+### zclassic
+
+    git clone https://github.com/z-classic/zclassic
+    cd zclassic
+    git checkout master
+    ./zcutil/build.sh -j2
+    
+    sudo ln -sr ./src/zcash-cli /usr/bin/zclassic-cli
+    
+### zencash
+
+    git clone ???
+    cd zen
+    git checkout master
+    ./zcutil/build.sh -j2
+    
+    sudo ln -sr ./src/zen-cli /usr/bin/zen-cli
+    
+### komodo
+
+    git clone https://github.com/jl777/komodo
+    cd komodo
+    git checkout master
+    ./zcutil/build.sh -j2
+    
+    sudo ln -sr ./src/komodo-cli /usr/bin/komodo-cli
+    
+## installing zcash-cli-cockpit plugin   
 Cockpit will search ~/.local/share/cockpit/ directory for plugins.
 
     mkdir ~/.local/share/cockpit/
@@ -44,7 +70,7 @@ Upgrading? Since there is no official relase at this time, you must "pull" the l
 Open https://localhost:9090/ in your web browser and login to cockpit.
 Look for a new menu entry under "Tools" called "zcash-cli".
 
-# Multi-Coin Support
+# multi-coin setup
 
 Change name of menu label for alternate coin.
 
