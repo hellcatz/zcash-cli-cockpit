@@ -107,10 +107,9 @@
 
 <div class="container-fluid">
 
-    <img style="float: left; height: 42px; padding: 0px; margin: 0px; padding-right: 12px;" src="zcash-logo-black.png"
-         alt="zcash logo"/>
+    <img id="logo" style="float: left; height: 42px; padding: 0px; margin: 0px; padding-right: 12px;" src="logo-ZEC.jpg" alt="logo" />
     <div style="padding-top: 6px;">
-        <h2 style="margin-top: 0px; padding-top: 0px; float: left;">cockpit plugin</h2>
+        <h2 style="margin-top: 0px; padding-top: 0px; float: left;"><span class="csymbol">ZEC</span> cockpit plugin</h2>
         <button class="btn btn-default btn-primary" style="margin-left:6px;" id="zcash-refresh">Reload</button>
     </div>
     <div style="clear: both;"></div>
@@ -332,6 +331,7 @@
 </div>
 <script src="zcash-cli.js"></script>
 <script>
+$("#logo").attr('src', 'logo-'+symbol+'.jpg');
 $(".csymbol").text(symbol);
 </script>
 </body>
