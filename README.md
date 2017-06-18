@@ -79,7 +79,7 @@ Change name of menu label for alternate coin.
 
 https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/manifest.json#L6
     
-Change variables in zcash-cli.js
+Change variables in config_example.js and save as config.js
 
 https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/zcash-cli.js#L17-L21
 
