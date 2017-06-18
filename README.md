@@ -46,7 +46,7 @@ Make sure you create a symlink to your cli binary. See examples below.
     
     sudo ln -sr ./src/zen-cli /usr/bin/zen-cli
     
-### komodo
+### komodo (doesn't support shielding)
 
     git clone https://github.com/jl777/komodo
     cd komodo
