@@ -1,6 +1,6 @@
 # zcash-cli-cockpit
 
-zcash-cli cockpit plugin - a browser based wallet ui for zcash based coins
+zcash-cli cockpit plugin - a browser based wallet ui for zcash based coins (now multi-coin configurable)
 
 ## install cockpit
 
