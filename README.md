@@ -65,6 +65,10 @@ Change directory and clone the git repository.
     cd ~/.local/share/cockpit/
     git clone https://github.com/hellcatz/zcash-cli-cockpit
     
+Copy `config_example.js` to `config.js` and modify as needed.
+
+https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/config_example.js#L1-L7
+
 Upgrading? Since there is no official relase at this time, you must "pull" the lastest from "master" using git.
 
     cd ~/.local/share/cockpit/zcash-cli-cockpit
@@ -78,10 +82,6 @@ Look for a new menu entry under "Tools" called "zcash-cli".
 Change name of menu label for alternate coin.
 
 https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/manifest.json#L6
-    
-Change variables in config_example.js and save as config.js
-
-https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/zcash-cli.js#L17-L21
 
 Make sure to name your daemons and cli binaries unique! Example alternate coins below...
 
