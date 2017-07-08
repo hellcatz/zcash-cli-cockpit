@@ -46,7 +46,16 @@ Make sure you create a symlink to your cli binary. See examples below.
     
     sudo ln -sr ./src/zen-cli /usr/bin/zen-cli
     
-### komodo (doesn't support shielding)
+### hush
+
+    git clone https://github.com/MyHush/hush
+    cd hush
+    git checkout master
+    ./zcutil/build.sh -j2
+
+    sudo ln -sr ./src/hush-cli /usr/bin/hush-cli
+    
+### komodo (work-in-progress)
 
     git clone https://github.com/jl777/komodo
     cd komodo
@@ -75,6 +84,7 @@ Upgrading? Since there is no official relase at this time, you must "pull" the l
     git pull
 
 Open https://localhost:9090/ in your web browser and login to cockpit.
+
 Look for a new menu entry under "Tools" called "zcash-cli".
 
 # multi-coin setup
@@ -85,6 +95,7 @@ https://github.com/hellcatz/zcash-cli-cockpit/blob/multi-coin/manifest.json#L6
 
 Make sure to name your daemons and cli binaries unique! Example alternate coins below...
 
+    sudo ln -sr ./src/hush-cli /usr/bin/hush-cli
     sudo ln -sr ./src/komodo-cli /usr/bin/komodo-cli
     sudo ln -sr ./src/zcash-cli /usr/bin/zclassic-cli
     sudo ln -sr ./src/zen-cli /usr/bin/zen-cli
