@@ -10,14 +10,14 @@ var explorer_transactions_url = "https://explorer.zcha.in/transactions/";
 //var zcashd = "zcashd";
 //var zcashcli = "zclassic-cli";
 //var zcash_getinfo_rate = 60000;
-//var explorer_transactions_url = "https://aayanl.tech:3000/insight/tx/";
+//var explorer_transactions_url = "http://zclexplorer.org/tx/";
 
 // Example ZenCash Config
 //var symbol = "ZEN"
 //var zcashd = "zend";
 //var zcashcli = "zen-cli";
 //var zcash_getinfo_rate = 60000;
-//var explorer_transactions_url = "http://node1.zenchain.info:8886/tx/";
+//var explorer_transactions_url = "https://explorer.zen-solutions.io/tx/";
 
 // Example Hush Config
 //var symbol = "HUSH"
@@ -32,3 +32,17 @@ var explorer_transactions_url = "https://explorer.zcha.in/transactions/";
 //var zcashcli = "komodo-cli";
 //var zcash_getinfo_rate = 60000;
 //var explorer_transactions_url = "http://kmd.explorer.supernet.org/tx/";
+
+// Example BitcoinZ Config
+//var symbol = "BTCZ"
+//var zcashd = "zcashd";
+//var zcashcli = "bitcoinz-cli";
+//var zcash_getinfo_rate = 60000;
+//var explorer_transactions_url = "https://bitcoinz.ph/tx/";
+
+// Example VoteCoin Config
+//var symbol = "VOTE"
+//var zcashd = "zcashd";
+//var zcashcli = "votecoin-cli";
+//var zcash_getinfo_rate = 60000;
+//var explorer_transactions_url = "http://explorer.votecoin.site/tx/";
