@@ -1,4 +1,4 @@
-# zcash-cli-cockpit
+# zcash-cli-cockpit (equihash coins)
 
 zcash-cli cockpit plugin - a browser based wallet ui for zcash based coins (now multi-coin configurable)
 
@@ -6,18 +6,23 @@ zcash-cli cockpit plugin - a browser based wallet ui for zcash based coins (now 
 
 Cockpit is a very useful web interface for server admins.
 
-Installing Cockpit in Ubuntu 16.04  
-http://www.itzgeek.com/how-tos/linux/ubuntu-how-tos/install-cockpit-on-ubuntu-16-04.html
+Ubuntu 16.04
+    
+    sudo apt-get install cockpit
 
-Fedora Server comes with Cockpit installed.
+Fedora Server
+    
+    sudo dnf install cockpit
 
 Access cockpit at the following url: https://localhost:9090/
 
-## building coin wallet daemon
+## setup coin daemon wallet
 
-This cockpit plugin requires the zcash-cli binary to be in the executable path.
+This cockpit plugin requires the coin-cli binary to be in the executable path (/usr/bin).
 
-Make sure you create a symlink to your cli binary. See examples below.
+    sudo ln -sr ./src/zcash-cli /usr/bin/zcash-cli
+    
+Below is a cheet sheet for getting up and running for multiple coins.
 
 ### zcash
 
@@ -55,6 +60,24 @@ Make sure you create a symlink to your cli binary. See examples below.
 
     sudo ln -sr ./src/hush-cli /usr/bin/hush-cli
     
+### bitcoinz
+
+    git clone https://github.com/bitcoinz-pod/bitcoinz
+    cd bitcoinz
+    git checkout master
+    ./zcutil/build.sh -j2
+
+    sudo ln -sr ./src/zcash-cli /usr/bin/bitcoinz-cli
+
+### votecoin
+
+    git clone https://github.com/Tomas-M/VoteCoin
+    cd VoteCoin
+    git checkout master
+    ./zcutil/build.sh -j2
+
+    sudo ln -sr ./src/zcash-cli /usr/bin/votecoin-cli
+
 ### komodo (work-in-progress)
 
     git clone https://github.com/jl777/komodo
@@ -103,13 +126,13 @@ Make sure to name your daemons and cli binaries unique! Example alternate coins 
 
 # donate to project author hellcatz
 
-    ZEC -> t1Qecf6zPTwWQ8eEhMHrux65gPQVYjKVDdq
-
-    ZCL -> t1f1xRt73TWgVWJQEFAW6DLwKtwmQvFahrN
-
-    KMD -> R9xUuaZcodTmeKFrKdNR25gKgoBE47Jt88
-
-    BTC -> 17v5jgu57wGKJnwkhVHvgYhbCVTFt9xXSN
+    Donate BTC: 17v5jgu57wGKJnwkhVHvgYhbCVTFt9xXSN
+    Donate ZEC: t1bBgVQMfak2LZfCVVk88BGV3Cgu4crE3Ci
+    Donate ZEN: znhGeka9zXmixvw6ufzGpcaSXcSACrjx5WZ
+    Donate HUSH: t1JiGEWQCZ4T8CyZzMC1PWLUjvk4TqWEXgn
+    Donate ZCL: t1f1xRt73TWgVWJQEFAW6DLwKtwmQvFahrN
+    Donate KMD: R9xUuaZcodTmeKFrKdNR25gKgoBE47Jt88
+    Donate BTCZ: t1MmkgcWyPuDQ8NkzfoKM8PUXTmjtofCSET
 
 <a target="_blank" href="http://z.cash/">z.cash</a> -> 
 <a target="_blank" href="https://github.com/zcash/zcash/blob/master/doc/payment-api.md">1.0 Payment API</a> |
