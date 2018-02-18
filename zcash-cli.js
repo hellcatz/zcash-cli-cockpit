@@ -100,6 +100,7 @@ var zcash_wait_status = $("#zcash-wait-status");
 var zcash_shield_taddresses_info = $("#zcash-shield-taddresses-info")
 var zcash_shield_taddresses = $("#zcash-shield-taddresses")
 var zcash_shield_zaddresses = $("#zcash-shield-zaddresses");
+var zcash_shield_cb_zaddresses = $("#zcash-shield-coinbase-zaddresses");
 var zcash_shield_extra_fee = $("#zcash-shield-extrafee");
 var zcash_shield_amount = $("#zcash-shield-amount");
 
@@ -113,6 +114,11 @@ var zcash_send_extra_fee = $("#zcash-send-extrafee");
 var zcash_send_to = $(".zcash-send-to");
 var zcash_send_amount = $(".zcash-send-amount");
 var zcash_send_memo = $(".zcash-send-memo");
+
+// send to tab
+var zcash_sendto_to = $(".zcash-sendto-to");
+var zcash_sendto_amount = $(".zcash-sendto-amount");
+var zcash_sendto_includefee = $(".zcash-sendto-includefee");
 
 var zcash_sending_coins = false;
 var zcash_send_to_wrapper = $("#zcash-send-to-wrapper");
@@ -132,7 +138,9 @@ zcash_dialog_closebtn.onclick = function () {
 //
 $("#zcash-refresh").on("click", begin_application);
 $("#zcash-send").on("click", zcash_onClickSend);
+$("#zcash-sendto").on("click", zcash_onClickSendTo);
 $("#zcash-shield").on("click", zcash_onClickShield);
+$("#zcash-shield-coinbase").on("click", zcash_onClickShieldCoinbase);
 $("#zcash-shield-all").on("click", zcash_onClickShieldAll);
 $("#zcash-cli-input-run").on("click", zcash_cli_input_run);
 $("#zcash-send-add").on("click", zcash_send_add_more);
@@ -361,8 +369,8 @@ function getblockrowindex(block) {
         return zcash_blocks_table.cell(rowIdx, 0).data() == block ? true : false;
     });
 
-    if ($(indexes).size() > 0)
-        return indexes[0];
+	if ($(indexes).length > 0)
+		return indexes[0];
 
     return null;
 }
@@ -372,7 +380,7 @@ function proc_zcash_cli_z_getblock(data) {
         var rowData = getblockrowindex(parseInt(jobj["height"]));
         if (rowData != null) {
             zcash_blocks_table.cell(rowData, 1).data(parseInt(jobj["time"]));
-            zcash_blocks_table.cell(rowData, 2).data($(jobj["tx"]).size());
+            zcash_blocks_table.cell(rowData, 2).data($(jobj["tx"]).length);
             zcash_blocks_table.cell(rowData, 3).data(parseInt(jobj["size"]));
         }
     }
@@ -395,7 +403,7 @@ function gettransactionrowindex(txid) {
         return zcash_transaction_table.cell(rowIdx, 0).data() == txid ? true : false;
     });
 
-    if ($(indexes).size() > 0)
+    if ($(indexes).length > 0)
         return indexes[0];
 
     return null;
@@ -675,11 +683,15 @@ function do_shield_all(minBal, maxBal, extrafee)
 }
 
 function zcash_onClickShieldAll(e) {
-	
-	//TODO, get zaddr to shield to
-	//TODO, get min/max balances to shield
-    
-	do_shield_all(9.9, 10.1, 0.0001);
+	do_shield_all(0.0002, 9999999.9, 0.0001);
+}
+
+function zcash_onClickShieldCoinbase(e) {
+    if (zcash_cli_op_running == true) {
+        alert("Operation already in progress...");
+        return;
+    }
+	zcash_cli_shield_coinbase(zcash_shield_zaddresses.val().trim());
 }
 
 function zcash_onClickShield(e) {
@@ -720,7 +732,7 @@ function zcash_cli_queued_shield(taddr, zaddr, amount, fee) {
 	
 	var ztx = "[{\"amount\": " + amount.toString() + ", \"address\": \"" + zaddr.toString() + "\"}]";
 
-    zcash_cli_op_running = true;
+    //zcash_cli_op_running = true;
     var cmd = [zcashcli, "z_sendmany", taddr, ztx];
     if (fee > 0.0001) {
 		cmd = [zcashcli, "z_sendmany", taddr, ztx, "1", fee.toFixed(8)];
@@ -755,6 +767,19 @@ function zcash_cli_shield(taddr, zaddr, amount, fee) {
     proc.fail(proc_zcash_cli_fail);
 }
 
+function zcash_cli_shield_coinbase(zaddr) {
+
+    zcash_cli_op_running = true;
+    var cmd = [zcashcli, "z_shieldcoinbase", "*", zaddr];
+    zcash_output.empty();
+    zcash_output.append(cmd.join(" "));
+    var proc = cockpit.spawn(cmd, {
+        err: 'out'
+    });
+    proc.done(proc_zcash_cli_output);
+    proc.fail(proc_zcash_cli_fail);
+}
+
 //
 // Send Tab
 //
@@ -776,6 +801,7 @@ function proc_zcash_cli_zaddr(data) {
 
     zcash_send_from.empty();
     zcash_shield_zaddresses.empty();
+	zcash_shield_cb_zaddresses.empty();
 
     // zero private balances
     shielded_balance = 0.0;
@@ -800,6 +826,10 @@ function proc_zcash_cli_zaddr(data) {
         var shortname = name.substring(0, 7) + "..." + name.substring((name.toString().length - 7));
         // populate shield tab select options
         zcash_shield_zaddresses.append($("<option/>", {
+            value: name,
+            text: shortname
+        }));
+		zcash_shield_cb_zaddresses.append($("<option/>", {
             value: name,
             text: shortname
         }));
@@ -865,6 +895,38 @@ function zcash_send_add_more(e) {
     zcash_send_to_wrapper.append(html);
 }
 
+function zcash_onClickSendTo(e) {
+    if (zcash_cli_op_running == true) {
+        alert("Operation already in progress...");
+        return;
+    }
+	
+    zcash_sendto_to = $(".zcash-sendto-to");
+    zcash_sendto_amount = $(".zcash-sendto-amount");
+    zcash_sendto_includefee = $(".zcash-sendto-includefee");
+	
+	if (isEmpty(zcash_sendto_to.val())) {
+		alert("Invalid Send To Address");
+        return;
+	}
+	if (isEmpty(zcash_sendto_amount.val())) {
+		alert("Invalid Amount");
+        return;
+	}
+		
+	
+	var cmd = [zcashcli, "sendtoaddress", zcash_sendto_to.val(), zcash_sendto_amount.val(), "", "", true];
+
+    zcash_output.empty();
+    zcash_output.append(cmd.join(" "));
+
+    var proc = cockpit.spawn(cmd, {
+        err: 'out'
+    });
+    proc.done(proc_zcash_cli_output);
+    proc.fail(proc_zcash_cli_fail);
+}
+
 function zcash_onClickSend(e) {
 
     if (zcash_cli_op_running == true) {
@@ -910,7 +972,7 @@ function zcash_onClickSend(e) {
 
     var confirmHtml = "Are you sure you want to send?\n\n";
     var total_amount = 0.0;
-    var count = $(to_addrs).size();
+    var count = $(to_addrs).length;
     var addrAvailable = false;
     for (i = 0; i < count; i++) {
         // ignore empty to_addrs
@@ -1021,7 +1083,7 @@ function zcash_cli_sendmany(from_addr, to_addrs, amounts, memos, fee) {
     }
 
     var ztx = "[";
-    var count = $(to_addrs).size();
+    var count = $(to_addrs).length;
     for (i = 0; i < count; i++) {
 
         if (isEmpty(to_addrs[i])) {
