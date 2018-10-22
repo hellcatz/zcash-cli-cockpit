@@ -1090,10 +1090,9 @@ function zcash_cli_sendmany(from_addr, to_addrs, amounts, memos, fee) {
             continue;
         }
         // make sure the addr string starts with z or t
-        if ((to_addrs[i].toString().match("^z") == null && to_addrs[i].toString().match("^t")) == null) {
-            continue;
-        }
-
+        //if ((to_addrs[i].toString().match("^z") == null && to_addrs[i].toString().match("^t")) == null) {
+            //continue;
+        //}
         var tx = "{\"amount\": " + parseFloat(amounts[i].toString()).toFixed(8) + ", \"address\": \"" + to_addrs[i].toString() + "\"}, ";
         // memos only work for z-addr
         if (memos[i].length > 0 && to_addrs[i].toString().match("^z") != null)
