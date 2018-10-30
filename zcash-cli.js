@@ -934,7 +934,7 @@ function zcash_onClickSend(e) {
         return;
     }
 
-    var isZADDR = (zcash_send_from.val().toString().match("^zc") != null && zcash_send_from.val().toString().match("^zs") != null);
+    var isZADDR = (zcash_send_from.val().toString().match("^zc") != null || zcash_send_from.val().toString().match("^zs") != null);
     var balances = isZADDR ? shielded_balances : taddr_balances;
     if (balances[zcash_send_from.val()] == null) {
         alert("Invalid from address.");
