@@ -691,7 +691,7 @@ function zcash_onClickShieldCoinbase(e) {
         alert("Operation already in progress...");
         return;
     }
-	zcash_cli_shield_coinbase(zcash_shield_zaddresses.val().trim());
+	zcash_cli_shield_coinbase(zcash_shield_cb_zaddresses.val().trim());
 }
 
 function zcash_onClickShield(e) {
